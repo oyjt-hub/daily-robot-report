@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>具身智能与机器人科研日报 - 2026-11-23</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+      options: { skipHtmlTags: ['script', 'style', 'textarea', 'code', 'pre'] }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root { --bg:#f8fafc; --card:#ffffff; --border:#e2e8f0; --text:#0f172a; --muted:#475569; --accent:#2563eb; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif; background:var(--bg); color:var(--text); line-height:1.65; }
+    .container { max-width:980px; margin:0 auto; padding:28px 18px 64px; }
+    .back-link { display:inline-block; margin-bottom:16px; color:var(--accent); text-decoration:none; font-weight:600; }
+    .hero { background:linear-gradient(135deg,#0f172a,#1e3a8a); color:#fff; padding:24px 28px; border-radius:14px; margin-bottom:20px; }
+    .hero h1 { margin:0 0 8px; font-size:1.55rem; }
+    .hero .sub { margin:0 0 12px; opacity:.9; font-size:.95rem; }
+    .stat-row { display:flex; flex-wrap:wrap; gap:8px; }
+    .stat-pill { background:rgba(255,255,255,.15); padding:3px 10px; border-radius:999px; font-size:.82rem; }
+    .panel { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 22px; margin-bottom:18px; }
+    .warn-panel { border-color:#f59e0b; background:#fffbeb; }
+    .paper-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:22px 24px; margin-bottom:22px; box-shadow:0 1px 3px rgba(15,23,42,.04); }
+    .paper-header { border-bottom:1px solid var(--border); padding-bottom:14px; margin-bottom:16px; }
+    .paper-header h2 { margin:8px 0 4px; font-size:1.25rem; }
+    .title-zh { margin:0 0 6px; font-size:1.05rem; font-weight:600; color:#1e40af; }
+    .aff-line { margin:0 0 10px; color:var(--muted); font-size:.9rem; }
+    .paper-meta { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+    .score-badge { display:inline-block; background:#dbeafe; color:#1d4ed8; font-weight:700; font-size:.8rem; padding:2px 8px; border-radius:6px; }
+    .tag-pill { display:inline-block; background:#f1f5f9; color:#334155; font-size:.78rem; padding:2px 8px; border-radius:999px; border:1px solid #cbd5e1; }
+    .source-pill { font-size:.78rem; color:var(--muted); margin-left:auto; }
+    .paper-links { display:flex; flex-wrap:wrap; gap:8px; }
+    .btn-link { display:inline-block; padding:4px 10px; border-radius:6px; border:1px solid #cbd5e1; color:var(--text); text-decoration:none; font-size:.83rem; font-weight:500; }
+    .btn-link:hover { border-color:var(--accent); color:var(--accent); }
+    .btn-code { background:#ecfdf5; border-color:#6ee7b7; color:#047857; }
+    .paper-body ul { padding-left:20px; }
+    .quick-list { list-style:none; padding:0; margin:0; }
+    .quick-list li { padding:10px 0; border-bottom:1px dashed var(--border); }
+    .quick-list li:last-child { border-bottom:none; }
+    .quick-en { color:var(--muted); font-size:.88rem; margin-top:2px; }
+    .quick-reason { color:#0369a1; font-size:.86rem; margin-top:2px; }
+    .sources-box textarea { width:100%; font-family:ui-monospace,monospace; font-size:.85rem; padding:10px; border:1px solid var(--border); border-radius:8px; background:#f8fafc; }
+    .sources-actions { margin-top:10px; display:flex; align-items:center; gap:12px; }
+    .copy-btn { background:var(--accent); color:#fff; border:none; padding:8px 14px; border-radius:8px; cursor:pointer; font-weight:600; }
+    .copy-btn:hover { background:#1d4ed8; }
+    #copy-status { color:#047857; font-size:.88rem; font-weight:600; }
+    @media (max-width:640px) { .paper-card { padding:16px; } .source-pill { margin-left:0; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back-link" href="../index.html">← 返回历史索引</a>
+    <header class="hero">
+      <h1>🤖 具身智能与机器人科研日报 · 2026-11-23</h1>
+      <p class="sub">Mon, 23 Nov 2026 · 运行于 2026-11-24 02:59:10 (CST) · 模式 auto</p>
+      <div class="stat-row">
+        <span class="stat-pill">抓取 645 篇</span>
+        <span class="stat-pill">预筛 118 篇</span>
+        <span class="stat-pill">精读 5 篇</span>
+        <span class="stat-pill">速览 0 篇</span>
+        <span class='stat-pill'>cs.RO: 89/89</span> <span class='stat-pill'>cs.CV: 31/171</span> <span class='stat-pill'>cs.LG: 14/171</span> <span class='stat-pill'>cs.AI: 29/214</span>
+      </div>
+    </header>
+    <section class='panel toc-panel'><h3>📑 本期目录（5 篇精读）</h3><ol><li><a href='#paper-1'><span class='score-badge'>9分</span> SonoAtlasWorld：基于解剖学基础的超声世界模型用于宽范围扫描</a> <small>(2611.26867)</small></li><li><a href='#paper-2'><span class='score-badge'>9分</span> SCAP：用于动作专家预训练的随机上下文</a> <small>(2611.27187)</small></li><li><a href='#paper-3'><span class='score-badge'>9分</span> EvoTER：通过工具使用经验与反思演化具身智能体</a> <small>(2611.27797)</small></li><li><a href='#paper-4'><span class='score-badge'>8分</span> FlowScope：3D场景流预训练提升手术机器人策略</a> <small>(2611.26865)</small></li><li><a href='#paper-5'><span class='score-badge'>8分</span> AceVLN：通过潜变量调度与补偿的视单语言导航（VLN）异步云边协同部署</a> <small>(2611.27255)</small></li></ol></section>
+    
+    
+            <article class="paper-card" id="paper-1">
+              <div class="paper-header">
+                <div class="paper-meta">
+                  <span class="score-badge">9/10</span>
+                  <span class='tag-pill'>WAM</span>
+                  <span class="source-pill">正文来源: html</span>
+                </div>
+                <h2>1. SonoAtlasWorld: Anatomy-Grounded Ultrasound World Models for Wide-Range Scanning</h2>
+                <p class="title-zh">SonoAtlasWorld：基于解剖学基础的超声世界模型用于宽范围扫描</p>
+                <p class="aff-line"><strong>研究机构：</strong>原文未提及 &nbsp;|&nbsp; <strong>arXiv:</strong> <code>2611.26867</code></p>
+                <div class="paper-links">
+                  <a class="btn-link" href="https://arxiv.org/abs/2611.26867" target="_blank">arXiv Abs</a>
+                  <a class="btn-link" href="https://arxiv.org/pdf/2611.26867.pdf" target="_blank">PDF</a>
+                  <a class="btn-link" href="https://arxiv.org/html/2611.26867" target="_blank">HTML 原文</a>
+                  <a class='btn-link btn-code' href='https://sonoatlasworld.github.io/SonoAtlasWorld' target='_blank'>Code/Project</a><a class='btn-link btn-code' href='https://github.com/madebyollin/taehv' target='_blank'>Code/Project</a>
+                </div>
+              </div>
+              <div class="paper-body markdown-body">
+                <p><strong>0. 论文标题</strong>
+- <strong>英文标题</strong>: SonoAtlasWorld: Anatomy-Grounded Ultrasound World Models for Wide-Range Scanning
+- <strong>中文标题</strong>: SonoAtlasWorld：基于解剖学基础的超声世界模型用于宽范围扫描
+- <strong>研究机构</strong>: 原文未提及
+- <strong>一句话总结</strong>: 深度解析调用失败（InternalServerError: Error code: 503），以下附原始摘要供参考。</p>
+<blockquote>
+<p><strong>Abstract</strong>: Learning robotic ultrasound policies requires interactive environments for scalable data generation and repeatable evaluation, while exploration on real patients is limited by acquisition costs and safety constraints. Generative world models offer an alternative, but image history and probe actions alone do not ensure anatomical consistency across wide-range scans and changing acoustic windows. We introduce SonoAtlasWorld, an ultrasound world model built on anatomy as state. A persistent 3D anatomical asset extracted from computed tomography (CT) anchors each scan to a specific anatomy. Probe actions determine anatomical and acoustic visibility conditions for a causal ultrasound generator trained on clinical videos. Our three-stage pipeline combines anatomy-conditioned pretraining, causal conversion and long-rollout alignment. Inference optimizations achieve pose-to-ultrasound throughput of 81.2 FPS. To evaluate anatomical control beyond image similarity, we introduce the Action-Following Index (AFI), which measures normalized reconstruction gain over a static-prefix baseline. On 40 held-out 3D volumes, SonoAtlasWorld achieves liver and macro-organ AFI of 0.428 and 0.262, compared with at most 0.117 and 0.038 for the tested action- and geometry-conditioned methods. Long-rollout alignment reduces brightness drift by 3.46x at the end of 40 repeated scan cycles. SonoAtlasWorld also generates offline policy-training demonstrations and supports anatomically grounded closed-loop evaluation. Scaling the generated training data improves key-plane acquisition success from 48.2% to 81.2% on unseen anatomies in simulation, demonstrating its utility for robotic ultrasound policy learning.</p>
+</blockquote>
+              </div>
+            </article>
+            
+            <article class="paper-card" id="paper-2">
+              <div class="paper-header">
+                <div class="paper-meta">
+                  <span class="score-badge">9/10</span>
+                  <span class='tag-pill'>VLA</span>
+                  <span class="source-pill">正文来源: html</span>
+                </div>
+                <h2>2. SCAP: Stochastic Context for Action Expert Pretraining</h2>
+                <p class="title-zh">SCAP：用于动作专家预训练的随机上下文</p>
+                <p class="aff-line"><strong>研究机构：</strong>原文未提及 &nbsp;|&nbsp; <strong>arXiv:</strong> <code>2611.27187</code></p>
+                <div class="paper-links">
+                  <a class="btn-link" href="https://arxiv.org/abs/2611.27187" target="_blank">arXiv Abs</a>
+                  <a class="btn-link" href="https://arxiv.org/pdf/2611.27187.pdf" target="_blank">PDF</a>
+                  <a class="btn-link" href="https://arxiv.org/html/2611.27187" target="_blank">HTML 原文</a>
+                  <a class='btn-link btn-code' href='https://huggingface.co/datasets/agibot-world' target='_blank'>Code/Project</a><a class='btn-link btn-code' href='https://github.com/huggingface/lerobot' target='_blank'>Code/Project</a>
+                </div>
+              </div>
+              <div class="paper-body markdown-body">
+                <p><strong>0. 论文标题</strong>
+- <strong>英文标题</strong>: SCAP: Stochastic Context for Action Expert Pretraining
+- <strong>中文标题</strong>: SCAP：用于动作专家预训练的随机上下文
+- <strong>研究机构</strong>: 原文未提及
+- <strong>一句话总结</strong>: 深度解析调用失败（InternalServerError: Error code: 503），以下附原始摘要供参考。</p>
+<blockquote>
+<p><strong>Abstract</strong>: Single-modality action-expert pretraining controls competition from visual shortcuts before vision--language--action (VLA) adaptation. Yet single-modality pretraining can impair the vision--language interactions needed for subsequent joint prediction. We construct a diagnostic model in which VA or LA pretraining can disable an initially active pathway for joint vision--language modeling. In this model, subsequent training with complete visual and language inputs cannot restore the pathway, even with unlimited adaptation. We therefore introduce Stochastic Context for Action Expert Pretraining (SCAP), a new action-expert pretraining stage that precedes full-input training. During this stage, visual and text tokens are randomly masked before entering the VLM. In this unified diagnostic model, SCAP can preserve the joint vision--language modeling pathway during pretraining and subsequent full-input training. Compared with direct full-input training, it can also reduce reliance on visual shortcuts and increase reliance on language instructions. SCAP consistently improves performance across four different VLA architectures. In real-robot experiments, it achieves 76.67% average success across three instruction-conditioned manipulation tasks, outperforming full-input pretraining by 25 percentage points.</p>
+</blockquote>
+              </div>
+            </article>
+            
+            <article class="paper-card" id="paper-3">
+              <div class="paper-header">
+                <div class="paper-meta">
+                  <span class="score-badge">9/10</span>
+                  <span class='tag-pill'>Robot-Agent</span>
+                  <span class="source-pill">正文来源: html</span>
+                </div>
+                <h2>3. EvoTER: Evolving Embodied Agents via Tool-Use Experience and Reflection</h2>
+                <p class="title-zh">EvoTER：通过工具使用经验与反思演化具身智能体</p>
+                <p class="aff-line"><strong>研究机构：</strong>原文未提及 &nbsp;|&nbsp; <strong>arXiv:</strong> <code>2611.27797</code></p>
+                <div class="paper-links">
+                  <a class="btn-link" href="https://arxiv.org/abs/2611.27797" target="_blank">arXiv Abs</a>
+                  <a class="btn-link" href="https://arxiv.org/pdf/2611.27797.pdf" target="_blank">PDF</a>
+                  <a class="btn-link" href="https://arxiv.org/html/2611.27797" target="_blank">HTML 原文</a>
+                  <a class='btn-link btn-code' href='https://evoter-project.github.io/' target='_blank'>Code/Project</a>
+                </div>
+              </div>
+              <div class="paper-body markdown-body">
+                <p><strong>0. 论文标题</strong>
+- <strong>英文标题</strong>: EvoTER: Evolving Embodied Agents via Tool-Use Experience and Reflection
+- <strong>中文标题</strong>: EvoTER：通过工具使用经验与反思演化具身智能体
+- <strong>研究机构</strong>: 原文未提及
+- <strong>一句话总结</strong>: 深度解析调用失败（InternalServerError: Error code: 503），以下附原始摘要供参考。</p>
+<blockquote>
+<p><strong>Abstract</strong>: Long-horizon embodied tasks require agents to ground instructions in changing observations, coordinate heterogeneous tools, and recover from failures that can propagate through downstream operations. Although existing LLM-based agents retain experience and refine reusable skills, successful local repairs do not by themselves establish complete-task gains over the current shared procedure library. We present EvoTER, an experience-driven framework that enables embodied agents to self-evolve tool-use skills without updating model parameters. EvoTER operates through a three-role evolution loop: Explorer records tool-use trajectories; Diagnoser distills successful and failed executions into skills for tool selection, parameter computation, postcondition checks, and recovery; and Validator retains candidate revisions only when they improve complete-task success in fresh sessions. In simulation, EvoTER improves overall task success from a pre-evolution baseline of 53.60% to 80.40%. In real-world experiments, simulation initialization reduces the attempts required to acquire short-horizon skills, while continued real-world evolution improves long-horizon success from 20% to 80%-100% across tasks and enables the evolving skill library to incorporate new tool functionality introduced after simulation development. Project page: this https URL</p>
+</blockquote>
+              </div>
+            </article>
+            
+            <article class="paper-card" id="paper-4">
+              <div class="paper-header">
+                <div class="paper-meta">
+                  <span class="score-badge">8/10</span>
+                  <span class='tag-pill'>VLA</span>
+                  <span class="source-pill">正文来源: html</span>
+                </div>
+                <h2>4. FlowScope: 3D Scene Flow Pretraining Improves Surgical Robot Policies</h2>
+                <p class="title-zh">FlowScope：3D场景流预训练提升手术机器人策略</p>
+                <p class="aff-line"><strong>研究机构：</strong>原文未提及 &nbsp;|&nbsp; <strong>arXiv:</strong> <code>2611.26865</code></p>
+                <div class="paper-links">
+                  <a class="btn-link" href="https://arxiv.org/abs/2611.26865" target="_blank">arXiv Abs</a>
+                  <a class="btn-link" href="https://arxiv.org/pdf/2611.26865.pdf" target="_blank">PDF</a>
+                  <a class="btn-link" href="https://arxiv.org/html/2611.26865" target="_blank">HTML 原文</a>
+                  
+                </div>
+              </div>
+              <div class="paper-body markdown-body">
+                <p><strong>0. 论文标题</strong>
+- <strong>英文标题</strong>: FlowScope: 3D Scene Flow Pretraining Improves Surgical Robot Policies
+- <strong>中文标题</strong>: FlowScope：3D场景流预训练提升手术机器人策略
+- <strong>研究机构</strong>: 原文未提及
+- <strong>一句话总结</strong>: 深度解析调用失败（InternalServerError: Error code: 503），以下附原始摘要供参考。</p>
+<blockquote>
+<p><strong>Abstract</strong>: Imitation learning for surgical robots is limited by the cost of collecting demonstrations. Meanwhile, many robot-assisted procedures are recorded as stereo video, yet policies cannot learn from them directly; clinical video carries no action labels. We present FlowScope, which pretrains a surgical policy network on unlabeled clinical video by forecasting scene flow, the metric 3D motion of scene points, with labels computed by off-the-shelf stereo depth and optical flow models. We pretrain the trunk of an Action Chunking Transformer (ACT) on a dataset of 1,149 clinical procedures (1.35M clips) and discard the flow head afterward, so the deployed policy is a standard ACT with no added inference cost. On a real surgical robotic system, FlowScope raises needle pickup success from 54% to 90% and first-handover success on needle regrasp from 4% to 52% (full task: 2% to 14%) over training from scratch (n=50 trials each), and retains its gains with a generative flow-matching action head. Ablations indicate that metric 3D motion is the strongest pretraining signal among those tested; kinematics, 2D tracks, depth alone, and scale-free 3D flow, each paired with kinematics, yield smaller or no gains. Representation analyses suggest that scene-flow pretraining encodes metric needle depth more accurately, that kinematics pretraining increases reliance on the robot state, and that needle-depth probes follow the ordering of real-robot success where offline validation error does not.</p>
+</blockquote>
+              </div>
+            </article>
+            
+            <article class="paper-card" id="paper-5">
+              <div class="paper-header">
+                <div class="paper-meta">
+                  <span class="score-badge">8/10</span>
+                  <span class='tag-pill'>VLA</span>
+                  <span class="source-pill">正文来源: html</span>
+                </div>
+                <h2>5. AceVLN: Asynchronous Cloud Edge Deployment of VLNs via Latent Scheduling and Compensation</h2>
+                <p class="title-zh">AceVLN：通过潜变量调度与补偿的视单语言导航（VLN）异步云边协同部署</p>
+                <p class="aff-line"><strong>研究机构：</strong>Peking University（北京大学）, Beijing Jiaotong University（北京交通大学） &nbsp;|&nbsp; <strong>arXiv:</strong> <code>2611.27255</code></p>
+                <div class="paper-links">
+                  <a class="btn-link" href="https://arxiv.org/abs/2611.27255" target="_blank">arXiv Abs</a>
+                  <a class="btn-link" href="https://arxiv.org/pdf/2611.27255.pdf" target="_blank">PDF</a>
+                  <a class="btn-link" href="https://arxiv.org/html/2611.27255" target="_blank">HTML 原文</a>
+                  <a class='btn-link btn-code' href='https://huggingface.co/InternRobotics/InternVLA-N1-w-NavDP' target='_blank'>Code/Project</a>
+                </div>
+              </div>
+              <div class="paper-body markdown-body">
+                <p><strong>0. 论文标题</strong>
+- <strong>英文标题</strong>: AceVLN: Asynchronous Cloud Edge Deployment of VLNs via Latent Scheduling and Compensation
+- <strong>中文标题</strong>: AceVLN：通过潜变量调度与补偿的视单语言导航（VLN）异步云边协同部署
+- <strong>研究机构</strong>: Peking University（北京大学）, Beijing Jiaotong University（北京交通大学）
+- <strong>一句话总结</strong>: 该工作提出了一种免训练的云边协同视单语言导航（VLN）框架（AceVLN），通过提取动作相关的关键潜变量子空间并结合熵引导的刷新调度与连续性引导的补偿机制，在减少云端计算与通信开销的同时显著提升了导航成功率。</p>
+<p><strong>1. 整体逻辑</strong>
+- <strong>研究任务</strong>: 资源受限机器人上的流式视单语言导航（Streaming Vision-Language Navigation, VLN）任务。
+- <strong>研究动机</strong>: 现有双系统（云端慢系统 + 边缘快系统）VLN 架构常采用云边协同（ECC）部署。然而，云端推理和通信延迟会导致机器人移动时重复使用历史潜变量，产生“潜变量失配”（Latent Mismatch），从而引起动作偏差和轨迹误差。现有自适应方法主要在动作或表征层面被动适应历史引导，无法在引导失效时主动请求更新，且缺乏对动作相关失配的显式建模。
+- <strong>本质改动</strong>: 提出了一种无须训练的框架，核心包括：1）子空间解耦的潜变量失配建模（隔离出对动作影响最大的关键子空间）；2）熵引导的潜变量刷新调度；3）连续性引导的边缘端潜变量补偿。
+- <strong>技术溯源</strong>: 基于双系统 VLN 基座模型（如 DualVLN 和 InternVLA-N1 结合 NavDP）。</p>
+<p><strong>2. 技术拆解</strong>
+- <strong>核心方法</strong>: 
+  - <em>子空间解耦的潜变量失配建模</em>：通过对动作-潜变量雅可比矩阵进行奇异值分解（SVD），提取出支配当前动作偏差的低维“关键子空间”（Critical Subspace），并利用边缘端快系统的融合特征响应作为轻量级运行时失配代理指标（Critical Feature Drift）。
+  - <em>熵引导的潜变量刷新调度</em>：计算关键特征漂移的方向能量分布熵（Critical Feature Drift Entropy）。高熵表示漂移分散、导航敏感度高，从而降低刷新阈值、触发更频繁的云端更新；低熵则允许更大的漂移容忍度。
+  - <em>连续性引导的潜变量补偿</em>：在等待云端更新的“Pending”期间，引入“关键漂移连续性”（Critical Drift Continuity）指标。当特征位移遵循上一次云端更新的方向时，在边缘端对外推的历史更新进行缩放补偿，以减轻延迟尖峰带来的影响。
+- <strong>关键细节</strong>: 
+  - 输入模态：连续视觉观测与语言指令。
+  - 动作空间与 Chunk 长度：原文未提及具体动作空间维度与 chunk 长度。
+  - 参数量：原文未提及模型参数量。
+  - 控制频率：原文未提及具体控制频率数值。
+  - 跨具身设计：支持多种基座模型（DualVLN, InternVLA-N1 / NavDP）并在不同硬件（Jetson AGX Orin / Thor）上验证。
+- <strong>训练/优化目标</strong>: 该方法为免训练（Training-free）框架，不涉及专门的损失函数、蒸馏或 RL 奖励设计。</p>
+<p><strong>3. 实验结果</strong>
+- <strong>实验设置</strong>: 
+  - 仿真基准：R2R-CE、English RxR-CE (val-unseen)。
+  - 硬件平台：云端 A100，边缘端 Jetson AGX Orin 或 Thor。
+  - 对比 Baseline：Naive（周期性刷新）、TUD（基于动作分歧）、Bridge（预测潜变量增量）、CloudEdge（通过延迟数据训练）。
+- <strong>评价指标</strong>: 导航误差（NE ↓）、成功率（SR ↑）、路径加权成功率（SPL ↑）、RxR-CE 的 nDTW ↑、平均计算开销（Am ↓）、响应时间（Rsp ↓）、计算量（FLOPs ↓）、S2 调用次数。
+- <strong>主要结果</strong>: 
+  - 在 R2R-CE 和 RxR-CE 基准上，相比最强 Baseline，AceVLN 的成功率（SR）提升了 1.7–2.4 个百分点，SPL 提升了 1.7–2.7 个百分点。
+  - 相比最低 Am 的 Baseline（Bridge），总 FLOPs 减少了 18.4%–22.3%，摊销计算时间（Am）减少了 2.7%–10.0%，平均响应时间（Rsp）略增 5–13 ms。
+  - 在延迟尖峰和网络压力测试下，补偿机制使成功率额外提升了 2.7 个百分点。</p>
+              </div>
+            </article>
+            
+    
+    
+        <section class="panel sources-box">
+          <h3>🔗 NotebookLM / 批量精读链接（共 5 篇）</h3>
+          <textarea id="sources-text" readonly rows="5">https://arxiv.org/html/2611.26867
+https://arxiv.org/html/2611.27187
+https://arxiv.org/html/2611.27797
+https://arxiv.org/html/2611.26865
+https://arxiv.org/html/2611.27255</textarea>
+          <div class="sources-actions">
+            <button id="copy-btn" class="copy-btn" onclick="copySources()">📋 复制全部 HTML 原文链接</button>
+            <span id="copy-status"></span>
+          </div>
+        </section>
+        
+    <section class='panel warn-panel'><h3>⚠️ 运行告警</h3><ul><li>⚠️ 初筛批次 1（30 篇）失败: RateLimitError: Error code: 429</li><li>⚠️ 初筛批次 2（30 篇）失败: InternalServerError: Error code: 503</li><li>⚠️ 初筛批次 4（28 篇）失败: InternalServerError: Error code: 503</li><li>⚠️ 共 3 个初筛批次失败，约 88 篇论文未纳入本次打分。</li><li>⚠️ 论文 2611.27187 深度解析降级为摘要: InternalServerError: Error code: 503</li><li>⚠️ 论文 2611.26867 深度解析降级为摘要: InternalServerError: Error code: 503</li><li>⚠️ 论文 2611.27797 深度解析降级为摘要: InternalServerError: Error code: 503</li><li>⚠️ 论文 2611.26865 深度解析降级为摘要: InternalServerError: Error code: 503</li></ul></section>
+  </div>
+  <script>
+    function copySources() {
+      const el = document.getElementById('sources-text');
+      const status = document.getElementById('copy-status');
+      if (!el) return;
+      const text = el.value;
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+          status.textContent = '✅ 已复制到剪贴板';
+        }).catch(() => fallbackCopy(el, status));
+      } else {
+        fallbackCopy(el, status);
+      }
+    }
+    function fallbackCopy(el, status) {
+      el.select();
+      el.setSelectionRange(0, 99999);
+      try {
+        document.execCommand('copy');
+        status.textContent = '✅ 已复制到剪贴板';
+      } catch (e) {
+        status.textContent = '请手动全选复制上方链接';
+      }
+    }
+  </script>
+</body>
+</html>
