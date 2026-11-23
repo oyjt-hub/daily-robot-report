@@ -19,6 +19,13 @@ from src.arxiv_fetcher import (
 from src.config import load_config
 from src.fulltext import parse_html_fulltext_document, parse_pdf_bytes
 from src.llm_pipeline import OpenAILLMClient, compute_retry_delay, extract_json_array
+from src.math_render import (
+    latex_to_html,
+    latex_to_plain,
+    render_inline_math_html,
+    render_inline_math_plain,
+    render_markdown_for_email,
+)
 from src.models import CategoryStats, DailyReport, DeepDiveItem, Paper, ScoredPaper
 from src.notifiers.email_notifier import build_email_message
 from src.notifiers.feishu import build_feishu_cards, sign_feishu
@@ -252,7 +259,10 @@ def test_feishu_cards_chunking_signing_and_email_and_site(tmp_path):
     # Action button only on final card
     assert not any(el.get("tag") == "action" for el in cards[0]["card"]["elements"])
     assert any(el.get("tag") == "action" for el in cards[1]["card"]["elements"])
-    assert "###" not in json.dumps(cards, ensure_ascii=False)
+    cards_dump = json.dumps(cards, ensure_ascii=False)
+    assert "###" not in cards_dump
+    assert r"\mathcal" not in cards_dump
+    assert "L_flow" in cards_dump
 
     # Site generation & math safety
     json_path, md_path, html_path = save_daily_outputs(report, tmp_path, cfg)
@@ -267,7 +277,7 @@ def test_feishu_cards_chunking_signing_and_email_and_site(tmp_path):
     assert "2026-11-23" in idx_text
     assert "具身论文 1" in idx_text
 
-    # Email MIME + attachment
+    # Email MIME + attachment + JS-free math rendering
     msg = build_email_message(report, cfg, html_report_path=html_path)
     attachments = list(msg.iter_attachments())
     assert len(attachments) == 1
@@ -275,6 +285,9 @@ def test_feishu_cards_chunking_signing_and_email_and_site(tmp_path):
     email_html = msg.get_body(preferencelist=("html",)).get_content()
     assert "具身论文 1" in email_html
     assert "Stanford University" in email_html
+    assert "<sub>flow</sub>" in email_html
+    assert r"\mathcal" not in email_html
+    assert r"\text" not in email_html
 def test_gemini_config_autodetect_and_override(tmp_path, monkeypatch):
     cfg_file = Path(__file__).resolve().parent.parent / "config.yaml"
     for var in ("LLM_API_KEY", "GEMINI_API_KEY", "DASHSCOPE_API_KEY", "LLM_BASE_URL", "LLM_FILTER_MODEL", "LLM_DEEP_MODEL", "LLM_FALLBACK_MODELS"):
@@ -445,4 +458,122 @@ def test_agent_bridge_defaults_resolve_from_different_cwd(tmp_path, monkeypatch)
     cfg = load_config(config_path=args.config, env_path=None)
     assert cfg.project_root == PROJECT_ROOT.resolve()
     assert bool(cfg.arxiv.secondary_prefilter_regex)
+
+
+def test_math_render_email_and_plain_expressions():
+    cases = [
+        r"$\Phi_v$",
+        r"$\mathcal{L}_{\text{video}}$",
+        r"$\ell \in \{9, 19, 29\}$",
+        r"$\tilde{Z}_t^{\mathrm{ego}} = Z_t^{\mathrm{ego}} + W_\alpha \operatorname{LN}(Z_t^{\mathrm{ego}})$",
+        r"$\lambda(1+c)^2 < \alpha = q^2$",
+        r"$\mathcal{L}_{\mathrm{mem}}(W) = -\sum_i m_i \langle f_W(k_i), v_i \rangle$",
+        r"$10^{-4}$",
+        r"$γ$-Scape",
+        r"$Z$-sight",
+        r"$\frac{a+b}{c}$",
+        r"$\mathbb{R}^{36}$",
+        r"Price \$100 and $0.2-0.3 per ep",
+    ]
+    for sample in cases:
+        html_out = render_inline_math_html(sample)
+        plain_out = render_inline_math_plain(sample)
+        assert "\\" not in html_out, f"Raw backslash leaked in HTML: {html_out}"
+        assert "\\" not in plain_out, f"Raw backslash leaked in plain: {plain_out}"
+        if r"\$100" in sample:
+            assert "$100" in html_out and "$100" in plain_out
+        else:
+            assert "$" not in html_out, f"Raw dollar leaked in HTML: {html_out}"
+            assert "$" not in plain_out, f"Raw dollar leaked in plain: {plain_out}"
+
+    assert "<sub>video</sub>" in latex_to_html(r"$\mathcal{L}_{\text{video}}$")
+    assert "&lt;" in latex_to_html(r"$\lambda(1+c)^2 < \alpha = q^2$")
+    assert "10⁻⁴" == latex_to_plain(r"$10^{-4}$")
+    assert "ℝ" in latex_to_plain(r"$\mathbb{R}^{36}$")
+
+    md_sample = "**2. 技术拆解**\n\n- 更新 $\\Phi_v$ 与 $\\frac{a+b}{c}$：\n\n$$\\mathcal{L}_{\\text{loss}} = 10^{-4}$$"
+    email_md_html = render_markdown_for_email(md_sample)
+    assert "<p><div>" not in email_md_html
+    assert "Φ<sub><i>v</i></sub>" in email_md_html
+    assert "<sup>−4</sup>" in email_md_html
+    assert "$" not in email_md_html and "\\" not in email_md_html
+
+
+def test_site_mathjax_multi_cdn_and_index_title_math(tmp_path):
+    cfg = _make_config(tmp_path)
+    p = Paper(id="2611.24940", title="$Z$-sight: Unifying VLA and WAM")
+    sp = ScoredPaper(paper=p, score=10, title_zh="$Z$-sight：统一架构", tags=["VLA", "WAM"])
+    dd = DeepDiveItem(
+        scored=sp,
+        title_zh="$Z$-sight：统一架构",
+        affiliation="Test Lab",
+        one_liner="验证 $\\Phi_v$ 有效性。",
+        markdown_body="**0. 论文标题**\n\n- 公式 $\\Phi_v$\n\n$$\\frac{a+b}{c}$$",
+        fulltext_source="html",
+    )
+    report = DailyReport(
+        date_iso="2026-11-24",
+        date_display="Tue, 24 Nov 2026",
+        run_time_cst="2026-11-24 09:30:00",
+        mode="antigravity",
+        total_scraped=10,
+        total_prefiltered=2,
+        total_unseen=2,
+        deep_dives=[dd],
+    )
+    _, _, html_path = save_daily_outputs(report, tmp_path, cfg)
+    html_text = html_path.read_text(encoding="utf-8")
+    for host in ("cdn.jsdelivr.net", "cdnjs.cloudflare.com", "cdn.bootcdn.net", "unpkg.com"):
+        assert host in html_text
+
+    idx_text = (tmp_path / "index.html").read_text(encoding="utf-8")
+    assert "$Z$-sight" not in idx_text
+    assert "<i>Z</i></span>-sight" in idx_text
+
+
+def test_daily_report_from_dict_roundtrip_and_republish(tmp_path):
+    import argparse
+    import shutil
+    from ops.agent_bridge import cmd_republish
+
+    shutil.copy(Path(__file__).resolve().parent.parent / "config.yaml", tmp_path / "config.yaml")
+    p = Paper(id="2611.27306", title="$γ$-Scape: World", code_urls=["https://example.com/code"])
+    sp = ScoredPaper(paper=p, score=8, title_zh="γ-Scape：移动具身", tags=["Robot-Agent"], reason="包含 $\\Phi_v$ 规划。")
+    dd = DeepDiveItem(
+        scored=sp,
+        title_zh="γ-Scape：移动具身",
+        affiliation="Test Univ",
+        one_liner="简介 $x_t$",
+        markdown_body="**0. 论文标题**\n\n- 指标 $10^{-4}$",
+        fulltext_source="html",
+        code_urls=["https://example.com/code"],
+    )
+    orig = DailyReport(
+        date_iso="2026-11-23",
+        date_display="Mon, 23 Nov 2026",
+        run_time_cst="2026-11-24 03:27:44",
+        mode="antigravity",
+        total_scraped=100,
+        total_prefiltered=20,
+        total_unseen=20,
+        category_stats=[CategoryStats(category="cs.RO", raw_count=89, kept_count=89, total_announced="89")],
+        deep_dives=[dd],
+        quick_summaries=[sp],
+        warnings=["test warning"],
+    )
+    restored = DailyReport.from_dict(orig.to_dict())
+    assert restored.to_dict() == orig.to_dict()
+
+    json_path, _, _ = save_daily_outputs(orig, tmp_path, _make_config(tmp_path))
+    args = argparse.Namespace(
+        data=str(json_path),
+        config=str(tmp_path / "config.yaml"),
+        env=None,
+        no_notify=True,
+        push_github="",
+    )
+    rc = cmd_republish(args)
+    assert rc == 0
+    assert (tmp_path / "archive" / "2026-11-23.html").exists()
+    assert (tmp_path / "index.html").exists()
 
