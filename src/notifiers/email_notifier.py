@@ -6,8 +6,9 @@ from email.message import EmailMessage
 from pathlib import Path
 
 from ..config import AppConfig
+from ..math_render import render_inline_math_html, render_markdown_for_email
 from ..models import DailyReport
-from ..site_generator import build_daily_markdown, render_markdown_math_safe
+from ..site_generator import build_daily_markdown
 
 
 def build_email_html(report: DailyReport, config: AppConfig) -> str:
@@ -36,8 +37,8 @@ def build_email_html(report: DailyReport, config: AppConfig) -> str:
             f"<td style='padding:8px;border-bottom:1px solid #e2e8f0;font-weight:bold;color:#1d4ed8;'>{idx}. ({sp.score}分)</td>"
             f"<td style='padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#334155;'>{html.escape(tags_str)}</td>"
             f"<td style='padding:8px;border-bottom:1px solid #e2e8f0;'>"
-            f"<div style='font-weight:bold;color:#0f172a;'>{html.escape(item.title_zh or p.title)}</div>"
-            f"<div style='font-size:12px;color:#475569;'>{html.escape(p.title)}</div>"
+            f"<div style='font-weight:bold;color:#0f172a;'>{render_inline_math_html(item.title_zh or p.title)}</div>"
+            f"<div style='font-size:12px;color:#475569;'>{render_inline_math_html(p.title)}</div>"
             f"<div style='font-size:12px;color:#64748b;'>机构：{html.escape(item.affiliation)} | "
             f"<a href='{html.escape(p.abs_url)}'>arXiv</a> · <a href='{html.escape(p.pdf_url)}'>PDF</a>{code_html}</div>"
             f"</td></tr>"
@@ -57,11 +58,11 @@ def build_email_html(report: DailyReport, config: AppConfig) -> str:
         for idx, item in enumerate(report.deep_dives, 1):
             sp = item.scored
             p = sp.paper
-            body_html = render_markdown_math_safe(item.markdown_body)
+            body_html = render_markdown_for_email(item.markdown_body)
             deep_sections.append(
                 f"<div style='background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:18px 20px;margin-bottom:16px;'>"
-                f"<h3 style='margin:0 0 6px;color:#0f172a;'>{idx}. [{sp.score}分] {html.escape(item.title_zh or p.title)}</h3>"
-                f"<p style='margin:0 0 10px;font-size:13px;color:#475569;'>{html.escape(p.title)} · 机构：{html.escape(item.affiliation)} · "
+                f"<h3 style='margin:0 0 6px;color:#0f172a;'>{idx}. [{sp.score}分] {render_inline_math_html(item.title_zh or p.title)}</h3>"
+                f"<p style='margin:0 0 10px;font-size:13px;color:#475569;'>{render_inline_math_html(p.title)} · 机构：{html.escape(item.affiliation)} · "
                 f"<a href='{html.escape(p.abs_url)}'>{html.escape(p.id)}</a></p>"
                 f"<div style='font-size:14px;line-height:1.6;color:#1e293b;'>{body_html}</div>"
                 f"</div>"
@@ -71,11 +72,11 @@ def build_email_html(report: DailyReport, config: AppConfig) -> str:
     if report.quick_summaries:
         item_parts: list[str] = []
         for sp in report.quick_summaries:
-            reason_span = f" — <span style='color:#0369a1;'>{html.escape(sp.reason)}</span>" if sp.reason else ""
+            reason_span = f" — <span style='color:#0369a1;'>{render_inline_math_html(sp.reason)}</span>" if sp.reason else ""
             item_parts.append(
                 f"<li style='margin:6px 0;'><strong>[{sp.score}分][{html.escape(', '.join(sp.tags))}]</strong> "
                 f"<a href='{html.escape(sp.paper.abs_url)}'>{html.escape(sp.paper.id)}</a> "
-                f"{html.escape(sp.title_zh or sp.paper.title)}{reason_span}</li>"
+                f"{render_inline_math_html(sp.title_zh or sp.paper.title)}{reason_span}</li>"
             )
         items = "".join(item_parts)
         quick_html = (
