@@ -1,0 +1,63 @@
+{
+  "date_iso": "2026-11-24",
+  "date_display": "Tue, 24 Nov 2026",
+  "run_time_cst": "2026-11-24 02:37:53",
+  "mode": "deep",
+  "total_scraped": 1,
+  "total_prefiltered": 1,
+  "total_unseen": 1,
+  "tags": [
+    "Manual"
+  ],
+  "category_stats": [],
+  "deep_dives": [
+    {
+      "id": "2611.24940",
+      "title_en": "$Z$-sight: Unifying Vision-Language-Action and Latent World Modeling",
+      "title_zh": "$Z$-sight: Unifying Vision-Language-Action and Latent World Modeling",
+      "abstract": "We introduce $Z$-sight, a unified robot foundation model that couples vision-language-action (VLA) and generative latent world modeling. Video-based world action models (WAMs) show the value of joint future-and-action generation for control, yet inherit the heavy cost of video generators. Recent latent-space policies avoid pixel generation, yet typically align intermediate features or rely on frozen target encoders, decoupling future prediction from the VLM's native feature space. $Z$-sight instead predicts the future directly in the visual token space in which its VLM perceives the present. Coupling a foresight expert and a continuous action expert with the VLM in a mixture-of-transformers, $Z$-sight jointly denoises future spatial tokens and actions at inference without pixel reconstruction or external encoders. Trained on human video and robot trajectories, $Z$-sight achieves 81.9% success on SIMPLE (+9.6 points over the strongest baseline) and 73.3% across six Unitree G1 tasks (+20.0 points) at 110 ms per chunk, while remaining competitive on tabletop benchmarks.",
+      "authors": [
+        "Junjie Ye",
+        "Yiqi Zhao",
+        "Muchen Xu",
+        "Celina Shiyu Wang",
+        "Hao Dong",
+        "Ruohai Ge",
+        "Rong Xue",
+        "Benjamin J Kolligs",
+        "Aditya Dutt",
+        "Sasanka Nagavalli",
+        "Nassim A. Samad",
+        "Gaurav S. Sukhatme",
+        "Jyotirmoy V. Deshmukh",
+        "Yue Wang",
+        "Yuliang Guo"
+      ],
+      "subjects": "Robotics (cs.RO) ; Computer Vision and Pattern Recognition (cs.CV)",
+      "comments": "",
+      "categories": [],
+      "code_urls": [
+        "https://huggingface.co/huggingface",
+        "https://huggingface.co/docs/hub",
+        "https://huggingface.co/nvidia/GR00T-N1.7-3B"
+      ],
+      "abs_url": "https://arxiv.org/abs/2611.24940",
+      "pdf_url": "https://arxiv.org/pdf/2611.24940.pdf",
+      "html_url": "https://arxiv.org/html/2611.24940",
+      "score": 10,
+      "tags": [
+        "Manual"
+      ],
+      "reason": "",
+      "affiliation": "原文未提及",
+      "one_liner": "解析异常（UnicodeEncodeError: 'ascii' codec can't encode character '\\ufeff' in position 7: ordinal not in range(128)）",
+      "markdown_body": "**0. 论文标题**\n- **英文标题**: $Z$-sight: Unifying Vision-Language-Action and Latent World Modeling\n- **中文标题**: $Z$-sight: Unifying Vision-Language-Action and Latent World Modeling\n- **研究机构**: 原文未提及\n- **一句话总结**: 深度解析调用失败（UnicodeEncodeError: 'ascii' codec can't encode character '\\ufeff' in position 7: ordinal not in range(128)），以下附原始摘要供参考。\n\n> **Abstract**: We introduce $Z$-sight, a unified robot foundation model that couples vision-language-action (VLA) and generative latent world modeling. Video-based world action models (WAMs) show the value of joint future-and-action generation for control, yet inherit the heavy cost of video generators. Recent latent-space policies avoid pixel generation, yet typically align intermediate features or rely on frozen target encoders, decoupling future prediction from the VLM's native feature space. $Z$-sight instead predicts the future directly in the visual token space in which its VLM perceives the present. Coupling a foresight expert and a continuous action expert with the VLM in a mixture-of-transformers, $Z$-sight jointly denoises future spatial tokens and actions at inference without pixel reconstruction or external encoders. Trained on human video and robot trajectories, $Z$-sight achieves 81.9% success on SIMPLE (+9.6 points over the strongest baseline) and 73.3% across six Unitree G1 tasks (+20.0 points) at 110 ms per chunk, while remaining competitive on tabletop benchmarks.",
+      "fulltext_source": "html",
+      "error": "UnicodeEncodeError: 'ascii' codec can't encode character '\\ufeff' in position 7: ordinal not in range(128)"
+    }
+  ],
+  "quick_summaries": [],
+  "warnings": [
+    "⚠️ 论文 2611.24940 深度解析降级为摘要: UnicodeEncodeError: 'ascii' codec can't encode character '\\ufeff' in position 7: ordinal not in range(128)"
+  ]
+}

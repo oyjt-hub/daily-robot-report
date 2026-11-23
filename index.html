@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📚 具身智能与机器人科研日报</title>
+  <style>
+    :root { --bg:#f8fafc; --card:#fff; --border:#e2e8f0; --text:#0f172a; --muted:#475569; --accent:#2563eb; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif; background:var(--bg); color:var(--text); }
+    .container { max-width:960px; margin:0 auto; padding:28px 18px 60px; }
+    .hero { background:linear-gradient(135deg,#0f172a,#1e3a8a); color:#fff; border-radius:14px; padding:24px 28px; margin-bottom:18px; }
+    .hero h1 { margin:0 0 6px; font-size:1.6rem; }
+    .hero p { margin:0; opacity:.9; font-size:.95rem; }
+    .toolbar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:18px; }
+    #search-input { flex:1; min-width:220px; padding:9px 12px; border:1px solid var(--border); border-radius:8px; font-size:.95rem; }
+    .filter-group { display:flex; flex-wrap:wrap; gap:6px; }
+    .filter-btn { border:1px solid #cbd5e1; background:#fff; padding:6px 12px; border-radius:999px; cursor:pointer; font-size:.85rem; }
+    .filter-btn.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+    .day-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 22px; margin-bottom:14px; }
+    .day-top { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap; }
+    .day-top h2 { margin:0 0 4px; font-size:1.2rem; }
+    .day-top h2 a { color:var(--text); text-decoration:none; }
+    .day-top h2 a:hover { color:var(--accent); }
+    .day-sub { margin:0; color:var(--muted); font-size:.88rem; }
+    .day-actions { display:flex; gap:8px; }
+    .btn-view, .btn-md { text-decoration:none; padding:6px 12px; border-radius:8px; font-size:.85rem; font-weight:600; }
+    .btn-view { background:var(--accent); color:#fff; }
+    .btn-md { border:1px solid #cbd5e1; color:var(--text); background:#fff; }
+    .day-tags { margin:10px 0 8px; display:flex; flex-wrap:wrap; gap:6px; }
+    .tag-pill { background:#f1f5f9; border:1px solid #cbd5e1; border-radius:999px; padding:2px 8px; font-size:.78rem; }
+    .preview-list { margin:0; padding-left:18px; color:#334155; font-size:.9rem; }
+    .preview-list li { margin:4px 0; }
+    .mini-score { color:#1d4ed8; font-weight:700; margin-right:4px; }
+    .mini-meta { color:var(--muted); font-size:.82rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="hero">
+      <h1>📚 具身智能与机器人科研日报</h1>
+      <p>VLA · WAM · Agent for Robotics · Robot RL · 共收录 1 期日报</p>
+    </header>
+    <div class="toolbar">
+      <input id="search-input" type="search" placeholder="搜索论文标题、arXiv ID、机构或日期..." oninput="applyFilters()">
+      <div class="filter-group"><button class='filter-btn active' data-tag='ALL'>全部</button><button class='filter-btn' data-tag='VLA'>VLA</button><button class='filter-btn' data-tag='WAM'>WAM</button><button class='filter-btn' data-tag='Robot-Agent'>Robot-Agent</button><button class='filter-btn' data-tag='Robot-RL'>Robot-RL</button></div>
+    </div>
+    <main id="archive-list">
+      
+            <article class="day-card" data-tags="Manual" data-search="2026-11-24 tue, 24 nov 2026 $z$-sight: unifying vision-language-action and latent world modeling $z$-sight: unifying vision-language-action and latent world modeling 2611.24940 原文未提及">
+              <div class="day-top">
+                <div>
+                  <h2><a href="archive/2026-11-24.html">2026-11-24</a></h2>
+                  <p class="day-sub">Tue, 24 Nov 2026 · 抓取 1 · 预筛 1 · 精读 1 · 速览 0</p>
+                </div>
+                <div class="day-actions">
+                  <a class="btn-view" href="archive/2026-11-24.html">网页精读</a>
+                  <a class="btn-md" href="archive/2026-11-24.md">Markdown</a>
+                </div>
+              </div>
+              <div class="day-tags"><span class='tag-pill'>Manual</span></div>
+              <ul class="preview-list"><li><span class='mini-score'>10分</span> <strong>$Z$-sight: Unifying Vision-Language-Action and Latent World Modeling</strong> <span class='mini-meta'>(2611.24940)</span></li></ul>
+            </article>
+            
+    </main>
+  </div>
+  <script>
+    let activeTag = 'ALL';
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeTag = btn.dataset.tag;
+        applyFilters();
+      });
+    });
+    function applyFilters() {
+      const q = (document.getElementById('search-input').value || '').trim().toLowerCase();
+      document.querySelectorAll('.day-card').forEach(card => {
+        const tags = (card.dataset.tags || '').split(',').filter(Boolean);
+        const text = card.dataset.search || '';
+        const matchTag = activeTag === 'ALL' || tags.includes(activeTag);
+        const matchQuery = !q || text.includes(q);
+        card.style.display = (matchTag && matchQuery) ? '' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>
