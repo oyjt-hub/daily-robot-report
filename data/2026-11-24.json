@@ -1,7 +1,7 @@
 {
   "date_iso": "2026-11-24",
   "date_display": "Tue, 24 Nov 2026",
-  "run_time_cst": "2026-11-24 02:37:53",
+  "run_time_cst": "2026-11-24 02:40:49",
   "mode": "deep",
   "total_scraped": 1,
   "total_prefiltered": 1,
@@ -14,7 +14,7 @@
     {
       "id": "2611.24940",
       "title_en": "$Z$-sight: Unifying Vision-Language-Action and Latent World Modeling",
-      "title_zh": "$Z$-sight: Unifying Vision-Language-Action and Latent World Modeling",
+      "title_zh": "$Z$-sight：统一视觉-语言-动作与潜在世界模型",
       "abstract": "We introduce $Z$-sight, a unified robot foundation model that couples vision-language-action (VLA) and generative latent world modeling. Video-based world action models (WAMs) show the value of joint future-and-action generation for control, yet inherit the heavy cost of video generators. Recent latent-space policies avoid pixel generation, yet typically align intermediate features or rely on frozen target encoders, decoupling future prediction from the VLM's native feature space. $Z$-sight instead predicts the future directly in the visual token space in which its VLM perceives the present. Coupling a foresight expert and a continuous action expert with the VLM in a mixture-of-transformers, $Z$-sight jointly denoises future spatial tokens and actions at inference without pixel reconstruction or external encoders. Trained on human video and robot trajectories, $Z$-sight achieves 81.9% success on SIMPLE (+9.6 points over the strongest baseline) and 73.3% across six Unitree G1 tasks (+20.0 points) at 110 ms per chunk, while remaining competitive on tabletop benchmarks.",
       "authors": [
         "Junjie Ye",
@@ -37,8 +37,6 @@
       "comments": "",
       "categories": [],
       "code_urls": [
-        "https://huggingface.co/huggingface",
-        "https://huggingface.co/docs/hub",
         "https://huggingface.co/nvidia/GR00T-N1.7-3B"
       ],
       "abs_url": "https://arxiv.org/abs/2611.24940",
@@ -50,14 +48,12 @@
       ],
       "reason": "",
       "affiliation": "原文未提及",
-      "one_liner": "解析异常（UnicodeEncodeError: 'ascii' codec can't encode character '\\ufeff' in position 7: ordinal not in range(128)）",
-      "markdown_body": "**0. 论文标题**\n- **英文标题**: $Z$-sight: Unifying Vision-Language-Action and Latent World Modeling\n- **中文标题**: $Z$-sight: Unifying Vision-Language-Action and Latent World Modeling\n- **研究机构**: 原文未提及\n- **一句话总结**: 深度解析调用失败（UnicodeEncodeError: 'ascii' codec can't encode character '\\ufeff' in position 7: ordinal not in range(128)），以下附原始摘要供参考。\n\n> **Abstract**: We introduce $Z$-sight, a unified robot foundation model that couples vision-language-action (VLA) and generative latent world modeling. Video-based world action models (WAMs) show the value of joint future-and-action generation for control, yet inherit the heavy cost of video generators. Recent latent-space policies avoid pixel generation, yet typically align intermediate features or rely on frozen target encoders, decoupling future prediction from the VLM's native feature space. $Z$-sight instead predicts the future directly in the visual token space in which its VLM perceives the present. Coupling a foresight expert and a continuous action expert with the VLM in a mixture-of-transformers, $Z$-sight jointly denoises future spatial tokens and actions at inference without pixel reconstruction or external encoders. Trained on human video and robot trajectories, $Z$-sight achieves 81.9% success on SIMPLE (+9.6 points over the strongest baseline) and 73.3% across six Unitree G1 tasks (+20.0 points) at 110 ms per chunk, while remaining competitive on tabletop benchmarks.",
+      "one_liner": "该工作提出了 $Z$-sight，通过在视觉-语言模型（VLM）共演化的原生视觉空间中联合去噪未来空间标记与连续动作，实现了无需像素级生成或外部编码器的统一具身智能控制。",
+      "markdown_body": "**0. 论文标题**\n- **英文标题**: $Z$-sight: Unifying Vision-Language-Action and Latent World Modeling\n- **中文标题**: $Z$-sight：统一视觉-语言-动作与潜在世界模型\n- **研究机构**: 原文未提及\n- **一句话总结**: 该工作提出了 $Z$-sight，通过在视觉-语言模型（VLM）共演化的原生视觉空间中联合去噪未来空间标记与连续动作，实现了无需像素级生成或外部编码器的统一具身智能控制。\n\n---\n\n**1. 整体逻辑**\n- **研究任务**: 具身机器人控制、视觉-语言-动作（VLA）策略与潜在世界模型（Latent World Modeling）的联合。\n- **研究动机**: 基于视频的世界动作模型（WAMs）虽然证明了联合未来与动作生成的价值，但继承了视频生成器的高昂计算成本；而近期的潜在空间策略避免了像素生成，但通常依赖中间特征对齐或冻结的目标编码器，导致未来预测与 VLM 的原生特征空间脱节。\n- **本质改动**: 核心创新在于将未来预测直接放在 VLM 感知当前时的视觉标记空间（Native Representation Space）中，通过混合 Transformer（MoT）架构同步联合去噪未来空间标记与连续动作。\n- **技术溯源**: 基于 VLM 基座（Qwen3.5-2B）、流匹配（Flow Matching）、混合 Transformer（MoT）、空间-时间视频编码（基于 MEM）以及指数移动平均（EMA）教师网络。\n\n---\n\n**2. 技术拆解**\n- **核心方法**: \n  - 架构包含三个核心流：VLM 前缀流（处理语言指令、状态和历史观察）、远见专家（Foresight Expert，通过流匹配在标记空间去噪未来空间标记）以及连续动作专家（Action Expert，通过流匹配生成动作块，并直接对齐/关注 foresight 预测的未来特征）。\n  - 在推理时，两类专家通过共享的欧拉步进行联合（Joint）去噪，无需像素解码。\n- **关键细节**: \n  - 输入模态：多视角历史观察、语言指令、本体感觉状态。\n  - 动作空间与块长度：输出动作块（Action Chunk，长度 $H=30$ 或对应不同环境设定），例如在 Unitree G1 上输出 78 维动作为底座/手部控制。\n  - 参数量：VLM (2.22B) + 远见专家 (0.48B) + 动作专家 (0.48B)，总计约 3.18B 参数。\n  - 控制频率：模型推理延迟低至 109.5 ms（30步动作块），匹配 10 Hz 控制频率。\n- **训练/优化目标**: \n  - 包含离散 FAST 动作交叉熵损失（$\\mathcal{L}_{\\text{FAST}}$）、动作流匹配损失（$\\mathcal{L}_{\\text{flow}}$）以及对齐 EMA 教师的未来视觉特征流匹配/预测损失（$\\mathcal{L}_{\\text{view}}$，权重 $\\lambda_v = 0.1$）。\n\n---\n\n**3. 实验结果**\n- **实验设置**: \n  - 仿真基准：SIMPLE（全身人形 loco-manipulation，L0-L2 难度）、LIBERO（单臂操作）、RoboTwin 2.0（双臂操作）。\n  - 真实机器人平台：Unitree G1 人形机器人（包含 6 个日常任务）。\n  - 对比 Baseline：$\\pi_{0.5}$、GR00T N1.7、$\\Psi_0$、Fast-WAM 等。\n- **评价指标**: 任务成功率（Success Rate, SR）、阶段进展分数（Progress Score）。\n- **主要结果**: \n  - 在 SIMPLE 人形仿真基准上，整体成功率达到 **81.9%**（在最强 Baseline GR00T N1.7 基础上提升 +9.6 个百分点），在 L0/L1/L2 各难度均领先。\n  - 在物理 Unitree G1 的 6 个真实任务上，平均成功率达 **73.3%**（相比最强 Baseline Fast-WAM 提升 +20.0 个百分点），多阶段任务优势尤为显著。\n  - 在桌面单臂 LIBERO 上平均成功率达到 **97.7%**；在双臂 RoboTwin 2.0 的干净测试（C2C）中达到 **82.44%**，C2R 随机化测试达到 **39.00%**。",
       "fulltext_source": "html",
-      "error": "UnicodeEncodeError: 'ascii' codec can't encode character '\\ufeff' in position 7: ordinal not in range(128)"
+      "error": null
     }
   ],
   "quick_summaries": [],
-  "warnings": [
-    "⚠️ 论文 2611.24940 深度解析降级为摘要: UnicodeEncodeError: 'ascii' codec can't encode character '\\ufeff' in position 7: ordinal not in range(128)"
-  ]
+  "warnings": []
 }
