@@ -156,3 +156,82 @@ class DailyReport:
             "quick_summaries": [sp.to_dict() for sp in self.quick_summaries],
             "warnings": self.warnings,
         }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "DailyReport":
+        def _paper_from_entry(entry: dict[str, Any]) -> Paper:
+            pid = str(entry.get("id", ""))
+            return Paper(
+                id=pid,
+                title=str(entry.get("title_en") or entry.get("title") or pid),
+                abstract=str(entry.get("abstract", "")),
+                authors=list(entry.get("authors") or []),
+                subjects=str(entry.get("subjects", "")),
+                comments=str(entry.get("comments", "")),
+                categories=list(entry.get("categories") or []),
+                code_urls=list(entry.get("code_urls") or []),
+                abs_url=str(entry.get("abs_url") or ""),
+                pdf_url=str(entry.get("pdf_url") or ""),
+                html_url=str(entry.get("html_url") or ""),
+            )
+
+        cat_stats = [
+            CategoryStats(
+                category=str(cs.get("category", "")),
+                raw_count=int(cs.get("raw_count", 0)),
+                kept_count=int(cs.get("kept_count", 0)),
+                total_announced=str(cs.get("total_announced", "0")),
+                error=cs.get("error"),
+            )
+            for cs in data.get("category_stats") or []
+        ]
+
+        deep_dives: list[DeepDiveItem] = []
+        for entry in data.get("deep_dives") or []:
+            paper = _paper_from_entry(entry)
+            sp = ScoredPaper(
+                paper=paper,
+                score=int(entry.get("score", 8)),
+                title_zh=str(entry.get("title_zh") or ""),
+                tags=[str(t) for t in (entry.get("tags") or []) if t],
+                reason=str(entry.get("reason") or ""),
+            )
+            deep_dives.append(
+                DeepDiveItem(
+                    scored=sp,
+                    title_zh=str(entry.get("title_zh") or paper.title),
+                    affiliation=str(entry.get("affiliation") or "原文未提及"),
+                    one_liner=str(entry.get("one_liner") or ""),
+                    markdown_body=str(entry.get("markdown_body") or ""),
+                    fulltext_source=str(entry.get("fulltext_source") or "html"),
+                    code_urls=list(entry.get("code_urls") or paper.code_urls),
+                    error=entry.get("error"),
+                )
+            )
+
+        quick_summaries: list[ScoredPaper] = []
+        for entry in data.get("quick_summaries") or []:
+            paper = _paper_from_entry(entry)
+            quick_summaries.append(
+                ScoredPaper(
+                    paper=paper,
+                    score=int(entry.get("score", 7)),
+                    title_zh=str(entry.get("title_zh") or ""),
+                    tags=[str(t) for t in (entry.get("tags") or []) if t],
+                    reason=str(entry.get("reason") or ""),
+                )
+            )
+
+        return cls(
+            date_iso=str(data.get("date_iso", "")),
+            date_display=str(data.get("date_display", "")),
+            run_time_cst=str(data.get("run_time_cst", "")),
+            mode=str(data.get("mode", "auto")),
+            total_scraped=int(data.get("total_scraped", 0)),
+            total_prefiltered=int(data.get("total_prefiltered", 0)),
+            total_unseen=int(data.get("total_unseen", 0)),
+            category_stats=cat_stats,
+            deep_dives=deep_dives,
+            quick_summaries=quick_summaries,
+            warnings=[str(w) for w in (data.get("warnings") or [])],
+        )
