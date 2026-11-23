@@ -11,6 +11,7 @@ from typing import Any
 import requests
 
 from ..config import AppConfig
+from ..math_render import render_inline_math_plain
 from ..models import DailyReport, DeepDiveItem
 
 
@@ -25,14 +26,15 @@ def _format_deep_item_lark_md(idx: int, item: DeepDiveItem) -> str:
     sp = item.scored
     p = sp.paper
     tags_str = " ".join(f"[{t}]" for t in sp.tags) if sp.tags else ""
-    title_zh = item.title_zh or sp.title_zh or p.title
-    one_liner = item.one_liner or sp.reason or "详见全文精读"
+    title_zh = render_inline_math_plain(item.title_zh or sp.title_zh or p.title)
+    title_en = render_inline_math_plain(p.title)
+    one_liner = render_inline_math_plain(item.one_liner or sp.reason or "详见全文精读")
     links = [f"[arXiv]({p.abs_url})", f"[PDF]({p.pdf_url})"]
     if item.code_urls:
         links.append(f"[Code/Page]({item.code_urls[0]})")
     return (
         f"**{idx}. [{sp.score}分]{tags_str} {title_zh}**\n"
-        f"英文原题：{p.title}\n"
+        f"英文原题：{title_en}\n"
         f"研究机构：{item.affiliation} | {' · '.join(links)}\n"
         f"核心结论：{one_liner}"
     )
@@ -117,7 +119,7 @@ def build_feishu_cards(report: DailyReport, config: AppConfig) -> list[dict[str,
         if part_idx == total_parts:
             if report.quick_summaries:
                 quick_lines = [
-                    f"- [{sp.score}分] [{sp.paper.id}]({sp.paper.abs_url}) {sp.title_zh or sp.paper.title}"
+                    f"- [{sp.score}分] [{sp.paper.id}]({sp.paper.abs_url}) {render_inline_math_plain(sp.title_zh or sp.paper.title)}"
                     for sp in report.quick_summaries[:12]
                 ]
                 if len(report.quick_summaries) > 12:
