@@ -1,0 +1,49 @@
+name: Deploy Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'index.html'
+      - 'archive/**'
+      - 'data/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: deploy-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare Clean _site Directory
+        id: prep_site
+        run: |
+          rm -rf _site
+          mkdir -p _site
+          if [ -f index.html ]; then
+            cp index.html _site/
+            [ -d archive ] && cp -r archive _site/
+            [ -d data ] && cp -r data _site/
+            echo "has_site=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_site=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy GitHub Pages
+        if: steps.prep_site.outputs.has_site == 'true'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          publish_branch: gh-pages
+          enable_jekyll: false

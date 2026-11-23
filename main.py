@@ -180,11 +180,13 @@ def run_pipeline(args: argparse.Namespace) -> int:
             print("[完成] 今日无新增未处理论文（可能为 arXiv 休刊日或今日已处理），跳过模型打分与推送。")
             return 0
 
+        failed_filter_ids: set[str] = set()
         scored = filter_and_score_papers(
             unseen_papers,
             config=config,
             llm_client=llm_client,
             warnings=warnings,
+            failed_ids_out=failed_filter_ids,
         )
         print(f"[{mode}] 初筛 >= {config.filtering.min_score_report} 分共 {len(scored)} 篇")
 
@@ -220,7 +222,8 @@ def run_pipeline(args: argparse.Namespace) -> int:
         )
 
         if not args.dry_run:
-            seen_store.mark_seen([p.id for p in unseen_papers], date_iso)
+            succeeded_ids = [p.id for p in unseen_papers if p.id not in failed_filter_ids]
+            seen_store.mark_seen(succeeded_ids, date_iso)
             seen_store.save()
 
     json_path, md_path, html_path = save_daily_outputs(

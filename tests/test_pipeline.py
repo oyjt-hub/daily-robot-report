@@ -361,3 +361,75 @@ def test_env_secret_strips_utf8_bom_and_zwsp(monkeypatch):
     cfg = load_config(config_path=cfg_file, env_path=None)
     assert cfg.llm.api_key == "AQ.TestKeyClean"
     assert cfg.llm.api_key.isascii()
+def test_agent_bridge_publish_roundtrip(tmp_path, monkeypatch):
+    import argparse
+    import shutil
+    from ops.agent_bridge import cmd_publish
+
+    shutil.copy(Path(__file__).resolve().parent.parent / "config.yaml", tmp_path / "config.yaml")
+    batch_file = tmp_path / "batch.json"
+    result_file = tmp_path / "result.json"
+    manifest_file = tmp_path / "manifest.json"
+
+    batch_file.write_text(
+        json.dumps({
+            "status": "ok",
+            "date_iso": "2026-11-23",
+            "date_display": "Mon, 23 Nov 2026",
+            "total_scraped": 100,
+            "total_prefiltered": 20,
+            "total_unseen": 20,
+            "category_stats": [{"category": "cs.RO", "raw_count": 89, "kept_count": 89, "total_announced": "89"}],
+            "papers": [
+                {"id": "2611.27187", "title": "SCAP: Stochastic Context for Action Expert Pretraining", "abstract": "VLA abstract", "authors": ["A. Author"], "categories": ["cs.RO"]}
+            ],
+        }),
+        encoding="utf-8",
+    )
+    manifest_file.write_text(
+        json.dumps({
+            "2611.27187": {
+                "id": "2611.27187",
+                "title": "SCAP: Stochastic Context for Action Expert Pretraining",
+                "authors": ["A. Author"],
+                "code_urls": ["https://github.com/org/scap"],
+                "source": "html",
+            }
+        }),
+        encoding="utf-8",
+    )
+    result_file.write_text(
+        json.dumps({
+            "deep_dives": [
+                {
+                    "id": "2611.27187",
+                    "score": 9,
+                    "tags": ["VLA"],
+                    "title_zh": "SCAP：面向动作专家预训练的随机上下文",
+                    "affiliation": "Test Lab",
+                    "one_liner": "提出随机上下文掩码防止视觉捷径。",
+                    "markdown_body": "**0. 论文标题**\n\n- **英文标题**: SCAP\n- **中文标题**: SCAP：随机上下文",
+                }
+            ],
+            "quick_summaries": [],
+        }),
+        encoding="utf-8",
+    )
+
+    args = argparse.Namespace(
+        batch=str(batch_file),
+        result=str(result_file),
+        fulltext_manifest=str(manifest_file),
+        config=str(tmp_path / "config.yaml"),
+        env=None,
+        no_notify=True,
+        push_github="",
+        skip_seen_update=True,
+    )
+    rc = cmd_publish(args)
+    assert rc == 0
+    assert (tmp_path / "data" / "2026-11-23.json").exists()
+    assert (tmp_path / "archive" / "2026-11-23.md").exists()
+    assert (tmp_path / "archive" / "2026-11-23.html").exists()
+    assert (tmp_path / "index.html").exists()
+    assert "Test Lab" in (tmp_path / "archive" / "2026-11-23.md").read_text(encoding="utf-8")

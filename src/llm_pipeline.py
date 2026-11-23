@@ -319,6 +319,7 @@ def filter_and_score_papers(
     config: AppConfig,
     llm_client: LLMClient,
     warnings: list[str] | None = None,
+    failed_ids_out: set[str] | None = None,
 ) -> list[ScoredPaper]:
     """Batch score papers against user topics, validating IDs against input chunk."""
     if not papers:
@@ -364,6 +365,8 @@ def filter_and_score_papers(
 
         if parsed is None:
             failed_batches.append((batch_no, len(chunk)))
+            if failed_ids_out is not None:
+                failed_ids_out.update(p.id for p in chunk)
             warn_list.append(f"⚠️ 初筛批次 {batch_no}（{len(chunk)} 篇）失败: {last_err}")
             continue
 
@@ -513,7 +516,7 @@ def _deep_dive_single(
 
     err_msg = f"{type(last_exc).__name__}: {last_exc}" if last_exc else "未知错误"
     fallback_md = (
-        "**0. 论文标题**\n"
+        "**0. 论文标题**\n\n"
         f"- **英文标题**: {paper.title or paper.id}\n"
         f"- **中文标题**: {scored.title_zh or paper.title or paper.id}\n"
         "- **研究机构**: 原文未提及\n"

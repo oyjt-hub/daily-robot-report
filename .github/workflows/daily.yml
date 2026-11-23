@@ -1,8 +1,6 @@
 name: Daily Robot Report
 
 on:
-  schedule:
-    - cron: '0 2 * * 1-5' # 周一至周五北京时间 10:00
   workflow_dispatch:
     inputs:
       mode:
