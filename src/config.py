@@ -142,9 +142,10 @@ class AppConfig:
 
 def _env_or_default(name: str, default: str = "") -> str:
     val = os.getenv(name)
-    if val is None or not val.strip():
+    if val is None:
         return default
-    return val.strip()
+    cleaned = val.strip().strip("\ufeff\u200b\u200c\u200d")
+    return cleaned if cleaned else default
 
 
 def _resolve_llm_credentials(llm_raw: dict[str, Any]) -> tuple[str, str, str, str]:

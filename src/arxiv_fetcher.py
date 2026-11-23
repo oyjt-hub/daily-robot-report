@@ -37,6 +37,8 @@ def normalize_arxiv_id(raw_id: str) -> str:
 _IGNORED_CODE_URLS = (
     "github.com/arxiv/html_feedback",
     "github.com/brucemiller/latexml",
+    "huggingface.co/huggingface",
+    "huggingface.co/docs",
 )
 
 

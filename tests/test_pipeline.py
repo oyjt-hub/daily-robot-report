@@ -352,3 +352,11 @@ def test_openai_client_fallback_on_503_and_404():
         out_txt = client.chat_text("hello", model="gemini-3.8-flash")
         assert out_txt == '{"papers": []}'
         assert called_models == ["gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.5-flash-lite"]
+def test_env_secret_strips_utf8_bom_and_zwsp(monkeypatch):
+    cfg_file = Path(__file__).resolve().parent.parent / "config.yaml"
+    for var in ("LLM_API_KEY", "GEMINI_API_KEY", "DASHSCOPE_API_KEY"):
+        monkeypatch.delenv(var, raising=False)
+    monkeypatch.setenv("GEMINI_API_KEY", "\ufeff\u200bAQ.TestKeyClean  ")
+    cfg = load_config(config_path=cfg_file, env_path=None)
+    assert cfg.llm.api_key == "AQ.TestKeyClean"
+    assert cfg.llm.api_key.isascii()
