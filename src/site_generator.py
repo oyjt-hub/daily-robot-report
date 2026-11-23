@@ -10,11 +10,8 @@ from typing import Any
 import markdown
 
 from .config import AppConfig
+from .math_render import MATH_PATTERNS, render_inline_math_html, render_inline_math_plain
 from .models import DailyReport
-
-_MATH_PATTERNS = re.compile(
-    r"(\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]|\\\([\s\S]+?\\\)|(?<!\\)\$(?!\s)([^\n$]+?)(?<!\s)\$)"
-)
 
 
 def render_markdown_math_safe(md_text: str) -> str:
@@ -26,7 +23,7 @@ def render_markdown_math_safe(md_text: str) -> str:
         placeholders[token] = html.escape(match.group(0))
         return token
 
-    protected = _MATH_PATTERNS.sub(_stash, md_text or "")
+    protected = MATH_PATTERNS.sub(_stash, md_text or "")
     rendered = markdown.markdown(
         protected,
         extensions=["extra", "tables", "fenced_code", "sane_lists"],
@@ -221,8 +218,53 @@ def _render_daily_html(report: DailyReport, config: AppConfig) -> str:
       tex: {{ inlineMath: [['$', '$'], ['\\\\(', '\\\\)']], displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']] }},
       options: {{ skipHtmlTags: ['script', 'style', 'textarea', 'code', 'pre'] }}
     }};
+    (function() {{
+      var cdns = [
+        'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js',
+        'https://cdn.bootcdn.net/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js',
+        'https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js'
+      ];
+      var loaded = false;
+      function mathReady() {{
+        return !!(window.MathJax && (window.MathJax.typesetPromise || window.MathJax.version));
+      }}
+      function tryLoad(idx) {{
+        if (loaded || mathReady() || idx >= cdns.length) return;
+        var finished = false;
+        var s = document.createElement('script');
+        s.id = idx === 0 ? 'MathJax-script' : ('MathJax-script-' + idx);
+        s.src = cdns[idx];
+        s.async = true;
+        var timer = setTimeout(function() {{
+          if (finished || mathReady()) {{
+            loaded = mathReady();
+            return;
+          }}
+          finished = true;
+          try {{ s.remove(); }} catch (e) {{}}
+          tryLoad(idx + 1);
+        }}, 5000);
+        s.onload = function() {{
+          clearTimeout(timer);
+          if (mathReady()) {{
+            loaded = true;
+          }} else if (!finished) {{
+            finished = true;
+            tryLoad(idx + 1);
+          }}
+        }};
+        s.onerror = function() {{
+          clearTimeout(timer);
+          if (finished) return;
+          finished = true;
+          tryLoad(idx + 1);
+        }};
+        document.head.appendChild(s);
+      }}
+      tryLoad(0);
+    }})();
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <style>
     :root {{ --bg:#f8fafc; --card:#ffffff; --border:#e2e8f0; --text:#0f172a; --muted:#475569; --accent:#2563eb; }}
     * {{ box-sizing: border-box; }}
@@ -380,15 +422,19 @@ def rebuild_index(output_root: Path, config: AppConfig) -> Path:
             t_en = str(item.get("title_en") or "")
             pid = str(item.get("id") or "")
             aff = str(item.get("affiliation") or "")
-            search_chunks.extend([t_zh, t_en, pid, aff])
+            search_chunks.extend([render_inline_math_plain(t_zh), render_inline_math_plain(t_en), pid, aff])
             if len(previews) < 3:
                 previews.append(
                     f"<li><span class='mini-score'>{item.get('score', '?')}分</span> "
-                    f"<strong>{html.escape(t_zh)}</strong> "
+                    f"<strong>{render_inline_math_html(t_zh)}</strong> "
                     f"<span class='mini-meta'>({html.escape(pid)})</span></li>"
                 )
         for sp in quick:
-            search_chunks.extend([str(sp.get("title_zh", "")), str(sp.get("title_en", "")), str(sp.get("id", ""))])
+            search_chunks.extend([
+                render_inline_math_plain(str(sp.get("title_zh", ""))),
+                render_inline_math_plain(str(sp.get("title_en", ""))),
+                str(sp.get("id", "")),
+            ])
 
         tag_pills = " ".join(f"<span class='tag-pill'>{html.escape(t)}</span>" for t in tags)
         cards_html.append(
