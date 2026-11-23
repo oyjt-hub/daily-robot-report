@@ -433,3 +433,16 @@ def test_agent_bridge_publish_roundtrip(tmp_path, monkeypatch):
     assert (tmp_path / "archive" / "2026-11-23.html").exists()
     assert (tmp_path / "index.html").exists()
     assert "Test Lab" in (tmp_path / "archive" / "2026-11-23.md").read_text(encoding="utf-8")
+
+
+def test_agent_bridge_defaults_resolve_from_different_cwd(tmp_path, monkeypatch):
+    from ops.agent_bridge import PROJECT_ROOT, build_parser
+
+    monkeypatch.chdir(tmp_path)
+    args = build_parser().parse_args(["fetch"])
+    assert Path(args.config) == PROJECT_ROOT / "config.yaml"
+    assert Path(args.env) == PROJECT_ROOT / ".env"
+    cfg = load_config(config_path=args.config, env_path=None)
+    assert cfg.project_root == PROJECT_ROOT.resolve()
+    assert bool(cfg.arxiv.secondary_prefilter_regex)
+

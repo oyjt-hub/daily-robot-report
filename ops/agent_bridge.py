@@ -420,14 +420,17 @@ def cmd_publish(args: argparse.Namespace) -> int:
     return exit_code
 
 
-def main() -> int:
+def build_parser() -> argparse.ArgumentParser:
+    default_cfg = str(PROJECT_ROOT / "config.yaml")
+    default_env = str(PROJECT_ROOT / ".env")
+
     parser = argparse.ArgumentParser(description="Bridge CLI for Antigravity-native daily robot report")
     sub = parser.add_subparsers(dest="command", required=True)
 
     p_fetch = sub.add_parser("fetch", help="Scrape arXiv and dump unseen candidate batch JSON")
     p_fetch.add_argument("--out", default="tmp_agent/batch.json")
-    p_fetch.add_argument("--config", default="config.yaml")
-    p_fetch.add_argument("--env", default=".env")
+    p_fetch.add_argument("--config", default=default_cfg)
+    p_fetch.add_argument("--env", default=default_env)
     p_fetch.add_argument("--force-rescrape", action="store_true")
 
     p_ft = sub.add_parser("fulltext", help="Extract HTML/PDF fulltext for selected paper IDs")
@@ -435,20 +438,23 @@ def main() -> int:
     p_ft.add_argument("--batch", default="tmp_agent/batch.json")
     p_ft.add_argument("--out-dir", default="tmp_agent/fulltexts")
     p_ft.add_argument("--budget", type=int, default=45000)
-    p_ft.add_argument("--config", default="config.yaml")
-    p_ft.add_argument("--env", default=".env")
+    p_ft.add_argument("--config", default=default_cfg)
+    p_ft.add_argument("--env", default=default_env)
 
     p_pub = sub.add_parser("publish", help="Render archive, send notifications, and optionally sync to GitHub")
     p_pub.add_argument("--batch", default="tmp_agent/batch.json")
     p_pub.add_argument("--result", required=True)
     p_pub.add_argument("--fulltext-manifest", default="tmp_agent/fulltexts/manifest.json")
-    p_pub.add_argument("--config", default="config.yaml")
-    p_pub.add_argument("--env", default=".env")
+    p_pub.add_argument("--config", default=default_cfg)
+    p_pub.add_argument("--env", default=default_env)
     p_pub.add_argument("--no-notify", action="store_true")
     p_pub.add_argument("--push-github", default="", help="owner/repo to upload archive via gh api")
     p_pub.add_argument("--skip-seen-update", action="store_true")
+    return parser
 
-    args = parser.parse_args()
+
+def main() -> int:
+    args = build_parser().parse_args()
     if args.command == "fetch":
         return cmd_fetch(args)
     if args.command == "fulltext":

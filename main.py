@@ -48,8 +48,16 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default="",
         help="逗号分隔的 arXiv ID（传入后自动切换为 deep 模式，也兼容环境变量 TARGET_IDS）",
     )
-    parser.add_argument("--config", default="config.yaml", help="YAML 配置文件路径")
-    parser.add_argument("--env", default=".env", help=".env 密钥文件路径")
+    parser.add_argument(
+        "--config",
+        default=str(Path(__file__).resolve().parent / "config.yaml"),
+        help="YAML 配置文件路径",
+    )
+    parser.add_argument(
+        "--env",
+        default=str(Path(__file__).resolve().parent / ".env"),
+        help=".env 密钥文件路径",
+    )
     parser.add_argument("--max-deep", type=int, default=None, help="覆盖每日最大深度精读篇数")
     parser.add_argument(
         "--output-dir",
