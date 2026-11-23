@@ -343,6 +343,7 @@ def test_openai_client_fallback_on_503_and_404():
             raise RuntimeError("Error code: 404 - NOT_FOUND")
         return _Resp()
 
+    assert client._client.max_retries == 0
     with patch.object(client._client.chat.completions, "create", side_effect=fake_create):
         out = client.chat_json("hello", model="gemini-3.8-flash")
         assert out == '{"papers": []}'
@@ -351,7 +352,7 @@ def test_openai_client_fallback_on_503_and_404():
         called_models.clear()
         out_txt = client.chat_text("hello", model="gemini-3.8-flash")
         assert out_txt == '{"papers": []}'
-        assert called_models == ["gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.5-flash-lite"]
+        assert called_models == ["gemini-3.5-flash-lite"]
 def test_env_secret_strips_utf8_bom_and_zwsp(monkeypatch):
     cfg_file = Path(__file__).resolve().parent.parent / "config.yaml"
     for var in ("LLM_API_KEY", "GEMINI_API_KEY", "DASHSCOPE_API_KEY"):

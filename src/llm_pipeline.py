@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Protocol
@@ -104,12 +105,20 @@ class OpenAILLMClient:
             api_key=api_key,
             base_url=base_url,
             timeout=timeout_seconds,
+            max_retries=0,
         )
         self._supports_json_object: bool | None = None
         self._fallback_models = [m for m in (fallback_models or []) if m]
+        self._dead_models: set[str] = set()
+        self._lock = threading.Lock()
 
     def _call_with_fallback(self, call_fn, primary_model: str) -> str:
-        candidates = [primary_model] + [m for m in self._fallback_models if m != primary_model]
+        all_candidates = [primary_model] + [m for m in self._fallback_models if m != primary_model]
+        with self._lock:
+            candidates = [m for m in all_candidates if m not in self._dead_models]
+            if not candidates:
+                self._dead_models.clear()
+                candidates = list(all_candidates)
         last_exc: Exception | None = None
         for idx, model_name in enumerate(candidates):
             try:
@@ -118,6 +127,8 @@ class OpenAILLMClient:
                 last_exc = exc
                 msg = str(exc).lower()
                 if any(tok in msg for tok in _FALLBACK_TRIGGERS) and idx + 1 < len(candidates):
+                    with self._lock:
+                        self._dead_models.add(model_name)
                     print(
                         f"[LLM] 模型 {model_name} 暂不可用（{type(exc).__name__}），"
                         f"自动切换备用模型 {candidates[idx + 1]}"
