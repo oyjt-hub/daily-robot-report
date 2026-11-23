@@ -1,0 +1,66 @@
+arxiv:
+  primary_categories:
+    - "cs.RO"
+  secondary_categories:
+    - "cs.CV"
+    - "cs.LG"
+    - "cs.AI"
+  max_show: 500
+  secondary_prefilter_regex: "(?i)\\b(robot(?:s|ic|ics)?|embodied|vision[- ]language[- ]action|VLA|world[- ]action[- ]model|WAM|world[- ]model(?:s|ing)?|video[- ]action|manipulation|locomotion|loco[- ]manipulation|humanoid|bimanual|dexterous|teleoperation|sim[- ]?to[- ]?real|sim2real|diffusion[- ]policy|flow[- ]matching.*(?:policy|action|robot)|action[- ]chunk(?:ing)?|robot[- ]?(?:rl|learning|policy|foundation|agent)|embodied[- ]agent|visual[- ]navigation)\\b"
+  fulltext_budget: 80000
+  max_pdf_mb: 30
+  user_agent: "DailyRobotReport/2.0 (research-digest; +https://arxiv.org)"
+
+filtering:
+  batch_size: 30
+  min_score_report: 7
+  min_score_deep_dive: 8
+  max_deep_dive_per_day: 12
+  topics:
+    - tag: "VLA"
+      name: "Vision-Language-Action (VLA) & 具身操作大模型"
+      description: "基于 VLM/多模态大模型或端到端扩散/Flow-Matching 策略的机器人操作、双臂/灵巧手控制、跨具身泛化、Action Chunking、Real-Time Chunking (RTC)、Test-Time Training (TTT)/在线适应与 Scaling Laws。"
+    - tag: "WAM"
+      name: "World-Action Models (WAM) & 具身世界模型"
+      description: "联合预测未来视觉/潜在状态与机器人动作的世界-动作模型、视频世界模型（用于机器人规划/策略学习/仿真器替代）、物理动力学预测与潜空间前瞻控制。"
+    - tag: "Robot-Agent"
+      name: "Agent for Robotics & 具身智能体规划"
+      description: "面向机器人长程任务规划、工具/技能调用、闭环反思自纠（Self-Correction/RSI）、Harness 编排、人机交互意图澄清与主动推理的具身 Agent。"
+    - tag: "Robot-RL"
+      name: "Robot Reinforcement Learning & Sim2Real"
+      description: "面向真实机器人的强化学习、VLA/扩散策略的在线/离线 RL 微调（RLHF/RLVR/Flow-RL）、全身控制与 Sim2Real 策略迁移。"
+  exclusions:
+    - "经典控制（纯 PID、MPC、LQR 理论推导）、单纯硬件机械设计/软体材料力学或纯步态机构分析"
+    - "传统 SLAM、经典路径规划（A*、RRT、PRM）、单纯多传感器外参标定"
+    - "未结合具身大模型/世界模型/RL策略的纯垂直工业巡检、水下/无人机编队、农业机械或纯粹手术器械控制"
+    - "纯 2D/3D 静态视觉识别、人体姿态估计或与机器人动作/规划无关的通用 NeRF/3DGS 重建"
+    - "纯文本多智能体博弈、通用多智能体 Swarm 调度或无具身物理交互的纯代码/网页 Agent"
+
+llm:
+  default_base_url: "https://generativelanguage.googleapis.com/v1beta/openai/"
+  default_filter_model: "gemini-3.8-flash"
+  default_deep_model: "gemini-3.8-flash"
+  fallback_models:
+    - "gemini-3.7-flash"
+    - "gemini-3.5-flash"
+    - "gemini-3.5-flash-lite"
+  timeout_seconds: 180
+  max_retries: 4
+  concurrency: 2
+  request_interval_seconds: 1.5
+
+site:
+  title: "具身智能与机器人科研日报"
+  subtitle: "VLA · WAM · Agent for Robotics · Robot RL"
+  archive_dir: "archive"
+  data_dir: "data"
+
+notifications:
+  feishu_max_papers_per_card: 7
+  feishu_max_bytes: 22000
+  email_attach_html: true
+  email_include_full_deep_dive: true
+
+state:
+  seen_file: "state/seen_papers.json"
+  retention_days: 90

@@ -1,0 +1,125 @@
+name: Daily Robot Report
+
+on:
+  schedule:
+    - cron: '0 2 * * 1-5' # 周一至周五北京时间 10:00
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: '运行模式（auto 全自动 / filter 仅初筛 / deep 仅精读）'
+        type: choice
+        options:
+          - auto
+          - filter
+          - deep
+        default: auto
+      paper_ids:
+        description: '可选：指定深入解析的 arXiv ID（逗号分隔，如 2611.24940,2611.24938）'
+        type: string
+        default: ''
+      force_rescrape:
+        description: '是否忽略已读去重状态（强制重新抓取处理当天论文）'
+        type: boolean
+        default: false
+      max_deep:
+        description: '可选：覆盖每日最大深度精读篇数（留空用 config.yaml 默认值）'
+        type: string
+        default: ''
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: daily-robot-report
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Daily Pipeline
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
+          LLM_BASE_URL: ${{ secrets.LLM_BASE_URL || vars.LLM_BASE_URL }}
+          LLM_FILTER_MODEL: ${{ secrets.LLM_FILTER_MODEL || vars.LLM_FILTER_MODEL }}
+          LLM_DEEP_MODEL: ${{ secrets.LLM_DEEP_MODEL || vars.LLM_DEEP_MODEL }}
+          LLM_FALLBACK_MODELS: ${{ secrets.LLM_FALLBACK_MODELS || vars.LLM_FALLBACK_MODELS }}
+          FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
+          FEISHU_SECRET: ${{ secrets.FEISHU_SECRET }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST || vars.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT || vars.SMTP_PORT }}
+          SMTP_USE_SSL: ${{ secrets.SMTP_USE_SSL || vars.SMTP_USE_SSL }}
+          SMTP_USER: ${{ secrets.SMTP_USER || vars.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM || vars.EMAIL_FROM }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO || vars.EMAIL_TO }}
+          PUBLIC_BASE_URL: ${{ secrets.PUBLIC_BASE_URL || vars.PUBLIC_BASE_URL }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+        run: |
+          ARGS=(--mode "${{ github.event.inputs.mode || 'auto' }}")
+          if [ -n "${{ github.event.inputs.paper_ids }}" ]; then
+            ARGS+=(--ids "${{ github.event.inputs.paper_ids }}")
+          fi
+          if [ "${{ github.event.inputs.force_rescrape }}" = "true" ]; then
+            ARGS+=(--force-rescrape)
+          fi
+          if [ -n "${{ github.event.inputs.max_deep }}" ]; then
+            ARGS+=(--max-deep "${{ github.event.inputs.max_deep }}")
+          fi
+          python main.py "${ARGS[@]}"
+
+      - name: Commit Archive & State
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          for target in archive data index.html state/seen_papers.json; do
+            if [ -e "$target" ]; then
+              git add "$target"
+            fi
+          done
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: daily report $(TZ=Asia/Shanghai date +'%Y-%m-%d')"
+            git pull --rebase origin main || true
+            git push origin main
+          fi
+
+      - name: Prepare Clean _site Directory
+        id: prep_site
+        run: |
+          rm -rf _site
+          mkdir -p _site
+          if [ -f index.html ]; then
+            cp index.html _site/
+            [ -d archive ] && cp -r archive _site/
+            [ -d data ] && cp -r data _site/
+            echo "has_site=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_site=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy GitHub Pages
+        if: steps.prep_site.outputs.has_site == 'true'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          publish_branch: gh-pages
+          enable_jekyll: false

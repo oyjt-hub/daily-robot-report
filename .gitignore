@@ -1,0 +1,10 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+logs/
+state/run.lock
+_site/
+dry_run_output/
+.pytest_cache/
