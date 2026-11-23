@@ -362,6 +362,39 @@ def build_report_from_agent_result(
     )
 
 
+def _deliver_report_outputs(
+    report: DailyReport,
+    config: AppConfig,
+    json_path: Path,
+    md_path: Path,
+    html_path: Path,
+    index_path: Path,
+    *,
+    no_notify: bool,
+    push_github: str,
+    commit_msg: str,
+    extra_upload_paths: tuple[Path, ...] = (),
+) -> int:
+    """Send configured notifications and push generated archive artifacts to GitHub."""
+    exit_code = 0
+    if not no_notify:
+        ok_mail, msg_mail = send_email(report, config=config, html_report_path=html_path)
+        print(f"[邮件] ({'OK' if ok_mail else 'SKIP/FAIL'}) {msg_mail}")
+        if config.email_configured() and not ok_mail:
+            exit_code = 1
+        ok_fs, msg_fs = send_feishu(report, config=config)
+        print(f"[飞书] ({'OK' if ok_fs else 'SKIP/FAIL'}) {msg_fs}")
+
+    if push_github:
+        upload_targets = [json_path, md_path, html_path, index_path, *extra_upload_paths]
+        for fpath in upload_targets:
+            rel = fpath.resolve().relative_to(config.project_root.resolve()).as_posix()
+            _gh_upload_file(push_github, rel, fpath, commit_msg)
+            print(f"[GitHub] 已同步 {rel}")
+
+    return exit_code
+
+
 def cmd_publish(args: argparse.Namespace) -> int:
     config = load_config(config_path=args.config, env_path=args.env)
 
@@ -385,6 +418,7 @@ def cmd_publish(args: argparse.Namespace) -> int:
     print(f"[归档] JSON={json_path}\n[归档] Markdown={md_path}\n[归档] HTML={html_path}")
 
     seen_path = config.project_root / config.state.seen_file
+    extra_uploads: tuple[Path, ...] = ()
     if not args.skip_seen_update:
         seen_store = SeenPaperStore(seen_path, retention_days=config.state.retention_days)
         seen_ids = [str(p.get("id", "")) for p in batch_data.get("papers", []) if p.get("id")]
@@ -397,27 +431,50 @@ def cmd_publish(args: argparse.Namespace) -> int:
         seen_store.mark_seen(seen_ids, report.date_iso)
         seen_store.save()
         print(f"[状态] 已标记 {len(seen_ids)} 篇论文为已读 -> {seen_path}")
+        if seen_path.exists():
+            extra_uploads = (seen_path,)
 
-    exit_code = 0
-    if not args.no_notify:
-        ok_mail, msg_mail = send_email(report, config=config, html_report_path=html_path)
-        print(f"[邮件] ({'OK' if ok_mail else 'SKIP/FAIL'}) {msg_mail}")
-        if config.email_configured() and not ok_mail:
-            exit_code = 1
-        ok_fs, msg_fs = send_feishu(report, config=config)
-        print(f"[飞书] ({'OK' if ok_fs else 'SKIP/FAIL'}) {msg_fs}")
+    return _deliver_report_outputs(
+        report,
+        config,
+        json_path,
+        md_path,
+        html_path,
+        index_path,
+        no_notify=args.no_notify,
+        push_github=args.push_github,
+        commit_msg=f"chore: Antigravity daily report {report.date_iso}",
+        extra_upload_paths=extra_uploads,
+    )
 
-    if args.push_github:
-        commit_msg = f"chore: Antigravity daily report {report.date_iso}"
-        upload_targets = [json_path, md_path, html_path, index_path]
-        if not args.skip_seen_update and seen_path.exists():
-            upload_targets.append(seen_path)
-        for fpath in upload_targets:
-            rel = fpath.resolve().relative_to(config.project_root.resolve()).as_posix()
-            _gh_upload_file(args.push_github, rel, fpath, commit_msg)
-            print(f"[GitHub] 已同步 {rel}")
 
-    return exit_code
+def cmd_republish(args: argparse.Namespace) -> int:
+    """Re-render archive HTML/MD/index and resend notifications from an existing data JSON."""
+    config = load_config(config_path=args.config, env_path=args.env)
+    data_path = Path(args.data)
+    if not data_path.is_absolute():
+        data_path = config.project_root / data_path
+    if not data_path.exists():
+        print(f"找不到日报数据文件: {data_path}", file=sys.stderr)
+        return 2
+
+    raw_data = json.loads(data_path.read_text(encoding="utf-8"))
+    report = DailyReport.from_dict(raw_data)
+    json_path, md_path, html_path = save_daily_outputs(report=report, output_root=config.project_root, config=config)
+    index_path = config.project_root / "index.html"
+    print(f"[重生成] JSON={json_path}\n[重生成] Markdown={md_path}\n[重生成] HTML={html_path}")
+
+    return _deliver_report_outputs(
+        report,
+        config,
+        json_path,
+        md_path,
+        html_path,
+        index_path,
+        no_notify=args.no_notify,
+        push_github=args.push_github,
+        commit_msg=f"chore: republish daily report {report.date_iso}",
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -450,6 +507,13 @@ def build_parser() -> argparse.ArgumentParser:
     p_pub.add_argument("--no-notify", action="store_true")
     p_pub.add_argument("--push-github", default="", help="owner/repo to upload archive via gh api")
     p_pub.add_argument("--skip-seen-update", action="store_true")
+
+    p_repub = sub.add_parser("republish", help="Re-render archive from data/YYYY-MM-DD.json and resend")
+    p_repub.add_argument("--data", required=True, help="Path to data/YYYY-MM-DD.json")
+    p_repub.add_argument("--config", default=default_cfg)
+    p_repub.add_argument("--env", default=default_env)
+    p_repub.add_argument("--no-notify", action="store_true")
+    p_repub.add_argument("--push-github", default="", help="owner/repo to upload archive via gh api")
     return parser
 
 
@@ -461,6 +525,8 @@ def main() -> int:
         return cmd_fulltext(args)
     if args.command == "publish":
         return cmd_publish(args)
+    if args.command == "republish":
+        return cmd_republish(args)
     return 2
 
 
