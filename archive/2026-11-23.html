@@ -9,8 +9,53 @@
       tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
       options: { skipHtmlTags: ['script', 'style', 'textarea', 'code', 'pre'] }
     };
+    (function() {
+      var cdns = [
+        'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js',
+        'https://cdn.bootcdn.net/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js',
+        'https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js'
+      ];
+      var loaded = false;
+      function mathReady() {
+        return !!(window.MathJax && (window.MathJax.typesetPromise || window.MathJax.version));
+      }
+      function tryLoad(idx) {
+        if (loaded || mathReady() || idx >= cdns.length) return;
+        var finished = false;
+        var s = document.createElement('script');
+        s.id = idx === 0 ? 'MathJax-script' : ('MathJax-script-' + idx);
+        s.src = cdns[idx];
+        s.async = true;
+        var timer = setTimeout(function() {
+          if (finished || mathReady()) {
+            loaded = mathReady();
+            return;
+          }
+          finished = true;
+          try { s.remove(); } catch (e) {}
+          tryLoad(idx + 1);
+        }, 5000);
+        s.onload = function() {
+          clearTimeout(timer);
+          if (mathReady()) {
+            loaded = true;
+          } else if (!finished) {
+            finished = true;
+            tryLoad(idx + 1);
+          }
+        };
+        s.onerror = function() {
+          clearTimeout(timer);
+          if (finished) return;
+          finished = true;
+          tryLoad(idx + 1);
+        };
+        document.head.appendChild(s);
+      }
+      tryLoad(0);
+    })();
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <style>
     :root { --bg:#f8fafc; --card:#ffffff; --border:#e2e8f0; --text:#0f172a; --muted:#475569; --accent:#2563eb; }
     * { box-sizing: border-box; }
