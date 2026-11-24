@@ -408,3 +408,67 @@ def render_markdown_for_email(md_text: str) -> str:
             rendered = rendered.replace(f"<p>{token}</p>", html_math)
         rendered = rendered.replace(token, html_math)
     return rendered
+
+
+_SEC0_HEADING_RE = re.compile(r"^\s*(?:\*\*|#{1,4}\s*)?0\.\s*论文标题\**\s*$")
+_SEC0_META_RE = re.compile(
+    r"^\s*[-*]\s*(?:\*\*)?(英文标题|中文标题|研究机构|一句话总结)(?:\*\*)?\s*[:：]\s*(.*)$"
+)
+_NEXT_SECTION_RE = re.compile(r"^\s*(?:\*\*|#{1,4}\s*)?[1-9]\.\s+")
+_EMAIL_SECTION_HEADING_RE = re.compile(r"<p><strong>(\d+\.[^<]+)</strong></p>")
+
+
+def prepare_body_for_display(md_text: str, fallback_one_liner: str = "") -> tuple[str, str]:
+    """Extract the one-liner summary and strip duplicated title/affiliation header lines."""
+    tldr = ""
+    kept_lines: list[str] = []
+    in_body = False
+    for line in (md_text or "").splitlines():
+        if not in_body:
+            if _NEXT_SECTION_RE.match(line):
+                in_body = True
+                kept_lines.append(line)
+                continue
+            if _SEC0_HEADING_RE.match(line):
+                continue
+            meta_m = _SEC0_META_RE.match(line)
+            if meta_m:
+                key, val = meta_m.group(1), meta_m.group(2).strip()
+                if key == "一句话总结" and val and not tldr:
+                    tldr = val
+                continue
+            if not line.strip() and not kept_lines:
+                continue
+            if line.strip():
+                in_body = True
+        kept_lines.append(line)
+
+    if not tldr and fallback_one_liner:
+        tldr = fallback_one_liner.strip()
+    return tldr, "\n".join(kept_lines).strip()
+
+
+def style_email_markdown_html(html_body: str) -> str:
+    """Apply minimalist inline styles suitable for email clients that strip CSS blocks."""
+    styled = _EMAIL_SECTION_HEADING_RE.sub(
+        '<div style="margin:16px 0 6px;padding-bottom:4px;border-bottom:1px solid #f1f5f9;'
+        'font-size:13.5px;font-weight:700;color:#0f172a;letter-spacing:0.01em;">\\1</div>',
+        html_body or "",
+    )
+    styled = styled.replace(
+        "<p>",
+        '<p style="margin:8px 0;font-size:13.8px;line-height:1.72;color:#334155;">',
+    )
+    styled = styled.replace(
+        "<ul>",
+        '<ul style="margin:6px 0 12px;padding-left:18px;color:#334155;">',
+    )
+    styled = styled.replace(
+        "<li>",
+        '<li style="margin:5px 0;font-size:13.8px;line-height:1.72;color:#334155;">',
+    )
+    styled = styled.replace(
+        "<code>",
+        '<code style="background:#f1f5f9;padding:1px 5px;border-radius:4px;font-size:12.5px;color:#0f172a;">',
+    )
+    return styled
