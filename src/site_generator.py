@@ -10,7 +10,12 @@ from typing import Any
 import markdown
 
 from .config import AppConfig
-from .math_render import MATH_PATTERNS, render_inline_math_html, render_inline_math_plain
+from .math_render import (
+    MATH_PATTERNS,
+    prepare_body_for_display,
+    render_inline_math_html,
+    render_inline_math_plain,
+)
 from .models import DailyReport
 
 
@@ -118,7 +123,7 @@ def _render_daily_html(report: DailyReport, config: AppConfig) -> str:
         title_zh = item.title_zh or sp.title_zh or p.title
         toc_items.append(
             f"<li><a href='#paper-{idx}'><span class='score-badge'>{sp.score}分</span> "
-            f"{html.escape(title_zh)}</a> <small>({html.escape(p.id)})</small></li>"
+            f"<span class='toc-title'>{html.escape(title_zh)}</span></a> <small>({html.escape(p.id)})</small></li>"
         )
         tag_pills = " ".join(
             f"<span class='tag-pill'>{html.escape(t)}</span>" for t in sp.tags
@@ -127,26 +132,37 @@ def _render_daily_html(report: DailyReport, config: AppConfig) -> str:
             f"<a class='btn-link btn-code' href='{html.escape(cu)}' target='_blank'>Code/Project</a>"
             for cu in item.code_urls[:2]
         )
-        body_html = render_markdown_math_safe(item.markdown_body)
+        tldr, cleaned_md = prepare_body_for_display(item.markdown_body, fallback_one_liner=item.one_liner)
+        tldr_box = ""
+        if tldr:
+            tldr_inner = re.sub(
+                r"^<p>([\s\S]*)</p>$",
+                r"\1",
+                render_markdown_math_safe(tldr).strip(),
+            ).replace("\n", " ")
+            tldr_box = f'<div class="tldr-box"><strong>一句话总结：</strong>{tldr_inner}</div>'
+        body_html = render_markdown_math_safe(cleaned_md) if cleaned_md else ""
         paper_cards.append(
             f"""
             <article class="paper-card" id="paper-{idx}">
               <div class="paper-header">
                 <div class="paper-meta">
-                  <span class="score-badge">{sp.score}/10</span>
+                  <span class="paper-idx">#{idx:02d}</span>
+                  <span class="score-badge">{sp.score}分</span>
                   {tag_pills}
-                  <span class="source-pill">正文来源: {html.escape(item.fulltext_source)}</span>
+                  <span class="source-pill">来源: {html.escape(item.fulltext_source)}</span>
                 </div>
-                <h2>{idx}. {html.escape(p.title)}</h2>
-                <p class="title-zh">{html.escape(title_zh)}</p>
-                <p class="aff-line"><strong>研究机构：</strong>{html.escape(item.affiliation)} &nbsp;|&nbsp; <strong>arXiv:</strong> <code>{html.escape(p.id)}</code></p>
+                <h2>{html.escape(title_zh)}</h2>
+                <p class="title-en">{html.escape(p.title)}</p>
+                <p class="aff-line">{html.escape(item.affiliation)} &middot; <code>{html.escape(p.id)}</code></p>
                 <div class="paper-links">
-                  <a class="btn-link" href="{html.escape(p.abs_url)}" target="_blank">arXiv Abs</a>
+                  <a class="btn-link" href="{html.escape(p.abs_url)}" target="_blank">arXiv</a>
                   <a class="btn-link" href="{html.escape(p.pdf_url)}" target="_blank">PDF</a>
                   <a class="btn-link" href="{html.escape(p.html_url)}" target="_blank">HTML 原文</a>
                   {code_links}
                 </div>
               </div>
+              {tldr_box}
               <div class="paper-body markdown-body">
                 {body_html}
               </div>
@@ -160,9 +176,9 @@ def _render_daily_html(report: DailyReport, config: AppConfig) -> str:
         tags_html = " ".join(f"<span class='tag-pill'>{html.escape(t)}</span>" for t in sp.tags)
         reason_div = f"<div class='quick-reason'>{html.escape(sp.reason)}</div>" if sp.reason else ""
         quick_rows.append(
-            f"<li><span class='score-badge'>{sp.score}分</span> {tags_html} "
-            f"<a href='{html.escape(p.abs_url)}' target='_blank'><code>{html.escape(p.id)}</code></a> "
-            f"<strong>{html.escape(sp.title_zh or p.title)}</strong>"
+            f"<li><div class='quick-head'><span class='score-badge'>{sp.score}分</span> {tags_html} "
+            f"<a class='quick-title' href='{html.escape(p.abs_url)}' target='_blank'>{html.escape(sp.title_zh or p.title)}</a> "
+            f"<code>{html.escape(p.id)}</code></div>"
             f"<div class='quick-en'>{html.escape(p.title)}</div>"
             f"{reason_div}</li>"
         )
@@ -171,7 +187,7 @@ def _render_daily_html(report: DailyReport, config: AppConfig) -> str:
     if quick_rows:
         quick_section = f"""
         <section class="panel">
-          <h2>⚡ 速览推荐（{len(quick_rows)} 篇）</h2>
+          <h2 class="section-label">速览推荐 · {len(quick_rows)} 篇</h2>
           <ul class="quick-list">{''.join(quick_rows)}</ul>
         </section>
         """
@@ -179,24 +195,24 @@ def _render_daily_html(report: DailyReport, config: AppConfig) -> str:
     warn_section = ""
     if report.warnings:
         warn_lis = "".join(f"<li>{html.escape(w)}</li>" for w in report.warnings)
-        warn_section = f"<section class='panel warn-panel'><h3>⚠️ 运行告警</h3><ul>{warn_lis}</ul></section>"
+        warn_section = f"<section class='panel warn-panel'><h3 class='section-label'>运行告警</h3><ul>{warn_lis}</ul></section>"
 
     sources_text = html.escape("\n".join(source_urls))
     sources_box = ""
     if source_urls:
         sources_box = f"""
         <section class="panel sources-box">
-          <h3>🔗 NotebookLM / 批量精读链接（共 {len(source_urls)} 篇）</h3>
+          <h3 class="section-label">NotebookLM / 批量精读链接 · {len(source_urls)} 篇</h3>
           <textarea id="sources-text" readonly rows="{min(8, max(3, len(source_urls)))}">{sources_text}</textarea>
           <div class="sources-actions">
-            <button id="copy-btn" class="copy-btn" onclick="copySources()">📋 复制全部 HTML 原文链接</button>
+            <button id="copy-btn" class="copy-btn" onclick="copySources()">复制全部 HTML 原文链接</button>
             <span id="copy-status"></span>
           </div>
         </section>
         """
 
     toc_html = (
-        f"<section class='panel toc-panel'><h3>📑 本期目录（{len(toc_items)} 篇精读）</h3><ol>{''.join(toc_items)}</ol></section>"
+        f"<section class='panel toc-panel'><h3 class='section-label'>本期精读目录 · {len(toc_items)} 篇</h3><ol>{''.join(toc_items)}</ol></section>"
         if toc_items
         else ""
     )
@@ -266,56 +282,75 @@ def _render_daily_html(report: DailyReport, config: AppConfig) -> str:
     }})();
   </script>
   <style>
-    :root {{ --bg:#f8fafc; --card:#ffffff; --border:#e2e8f0; --text:#0f172a; --muted:#475569; --accent:#2563eb; }}
+    :root {{ --bg:#f7f8fa; --card:#ffffff; --border:#e5e7eb; --hairline:#f1f5f9; --text:#0f172a; --body:#334155; --muted:#64748b; --accent:#2563eb; }}
     * {{ box-sizing: border-box; }}
-    body {{ margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif; background:var(--bg); color:var(--text); line-height:1.65; }}
-    .container {{ max-width:980px; margin:0 auto; padding:28px 18px 64px; }}
-    .back-link {{ display:inline-block; margin-bottom:16px; color:var(--accent); text-decoration:none; font-weight:600; }}
-    .hero {{ background:linear-gradient(135deg,#0f172a,#1e3a8a); color:#fff; padding:24px 28px; border-radius:14px; margin-bottom:20px; }}
-    .hero h1 {{ margin:0 0 8px; font-size:1.55rem; }}
-    .hero .sub {{ margin:0 0 12px; opacity:.9; font-size:.95rem; }}
-    .stat-row {{ display:flex; flex-wrap:wrap; gap:8px; }}
-    .stat-pill {{ background:rgba(255,255,255,.15); padding:3px 10px; border-radius:999px; font-size:.82rem; }}
-    .panel {{ background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 22px; margin-bottom:18px; }}
-    .warn-panel {{ border-color:#f59e0b; background:#fffbeb; }}
-    .paper-card {{ background:var(--card); border:1px solid var(--border); border-radius:14px; padding:22px 24px; margin-bottom:22px; box-shadow:0 1px 3px rgba(15,23,42,.04); }}
-    .paper-header {{ border-bottom:1px solid var(--border); padding-bottom:14px; margin-bottom:16px; }}
-    .paper-header h2 {{ margin:8px 0 4px; font-size:1.25rem; }}
-    .title-zh {{ margin:0 0 6px; font-size:1.05rem; font-weight:600; color:#1e40af; }}
-    .aff-line {{ margin:0 0 10px; color:var(--muted); font-size:.9rem; }}
-    .paper-meta {{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }}
-    .score-badge {{ display:inline-block; background:#dbeafe; color:#1d4ed8; font-weight:700; font-size:.8rem; padding:2px 8px; border-radius:6px; }}
-    .tag-pill {{ display:inline-block; background:#f1f5f9; color:#334155; font-size:.78rem; padding:2px 8px; border-radius:999px; border:1px solid #cbd5e1; }}
-    .source-pill {{ font-size:.78rem; color:var(--muted); margin-left:auto; }}
-    .paper-links {{ display:flex; flex-wrap:wrap; gap:8px; }}
-    .btn-link {{ display:inline-block; padding:4px 10px; border-radius:6px; border:1px solid #cbd5e1; color:var(--text); text-decoration:none; font-size:.83rem; font-weight:500; }}
+    body {{ margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }}
+    .container {{ max-width:820px; margin:0 auto; padding:28px 18px 64px; }}
+    .back-link {{ display:inline-block; margin-bottom:14px; color:var(--muted); text-decoration:none; font-size:.88rem; font-weight:500; }}
+    .back-link:hover {{ color:var(--accent); }}
+    .hero {{ background:var(--card); border:1px solid var(--border); border-top:3px solid var(--accent); padding:22px 26px; border-radius:10px; margin-bottom:16px; }}
+    .hero-eyebrow {{ font-size:.8rem; color:var(--muted); margin-bottom:4px; }}
+    .hero h1 {{ margin:0 0 6px; font-size:1.45rem; font-weight:700; color:var(--text); letter-spacing:-0.01em; }}
+    .hero .sub {{ margin:0 0 12px; color:var(--muted); font-size:.9rem; }}
+    .stat-row {{ display:flex; flex-wrap:wrap; gap:6px; }}
+    .stat-pill {{ background:#f8fafc; border:1px solid var(--hairline); color:var(--muted); padding:2px 9px; border-radius:6px; font-size:.78rem; white-space:nowrap; }}
+    .panel {{ background:var(--card); border:1px solid var(--border); border-radius:10px; padding:20px 24px; margin-bottom:16px; }}
+    .section-label {{ margin:0 0 12px; font-size:.85rem; font-weight:600; color:var(--muted); letter-spacing:.03em; }}
+    .toc-panel ol {{ list-style:none; padding:0; margin:0; counter-reset:toc; }}
+    .toc-panel li {{ counter-increment:toc; padding:8px 0; border-top:1px solid var(--hairline); display:flex; flex-wrap:wrap; align-items:baseline; gap:8px; font-size:.93rem; }}
+    .toc-panel li:first-child {{ border-top:none; }}
+    .toc-panel li::before {{ content:counter(toc, decimal-leading-zero); font-size:.78rem; font-weight:600; color:#94a3b8; min-width:20px; }}
+    .toc-panel li a {{ text-decoration:none; color:var(--text); font-weight:500; }}
+    .toc-panel li a:hover .toc-title {{ color:var(--accent); }}
+    .toc-panel li small {{ color:#94a3b8; font-size:.8rem; }}
+    .warn-panel {{ border-color:#fcd34d; background:#fffbeb; }}
+    .paper-card {{ background:var(--card); border:1px solid var(--border); border-radius:10px; padding:24px 26px; margin-bottom:18px; }}
+    .paper-header {{ margin-bottom:14px; }}
+    .paper-meta {{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-bottom:8px; }}
+    .paper-idx {{ font-size:.8rem; font-weight:600; color:#94a3b8; margin-right:2px; }}
+    .paper-header h2 {{ margin:0 0 4px; font-size:1.22rem; font-weight:700; line-height:1.4; color:var(--text); }}
+    .title-en {{ margin:0 0 6px; font-size:.9rem; color:var(--muted); line-height:1.45; }}
+    .aff-line {{ margin:0 0 12px; color:#94a3b8; font-size:.84rem; }}
+    .aff-line code {{ background:#f8fafc; color:var(--muted); padding:1px 6px; border-radius:4px; font-size:.8rem; }}
+    .score-badge {{ display:inline-block; white-space:nowrap; background:#eff6ff; color:#1d4ed8; font-weight:600; font-size:.76rem; padding:1px 7px; border-radius:4px; }}
+    .tag-pill {{ display:inline-block; white-space:nowrap; background:#f1f5f9; color:#475569; font-size:.74rem; padding:1px 7px; border-radius:4px; }}
+    .source-pill {{ font-size:.76rem; color:#94a3b8; margin-left:auto; }}
+    .paper-links {{ display:flex; flex-wrap:wrap; gap:6px; }}
+    .btn-link {{ display:inline-block; padding:3px 10px; border-radius:6px; border:1px solid var(--border); color:var(--body); background:#fff; text-decoration:none; font-size:.8rem; font-weight:500; }}
     .btn-link:hover {{ border-color:var(--accent); color:var(--accent); }}
-    .btn-code {{ background:#ecfdf5; border-color:#6ee7b7; color:#047857; }}
-    .paper-body ul {{ padding-left:20px; }}
+    .btn-code {{ color:#047857; border-color:#d1fae5; background:#f0fdf4; }}
+    .tldr-box {{ background:#f8fafc; border-left:3px solid var(--accent); padding:10px 14px; border-radius:0 6px 6px 0; margin:0 0 16px; font-size:.93rem; color:#1e293b; line-height:1.68; }}
+    .paper-body {{ font-size:.94rem; color:var(--body); line-height:1.75; }}
+    .paper-body > p {{ margin:14px 0 6px; }}
+    .paper-body > p > strong:only-child {{ display:block; padding-bottom:4px; border-bottom:1px solid var(--hairline); color:var(--text); font-size:.95rem; }}
+    .paper-body ul {{ margin:6px 0 12px; padding-left:20px; }}
+    .paper-body li {{ margin:5px 0; }}
+    .paper-body code {{ background:#f1f5f9; padding:1px 5px; border-radius:4px; font-size:.85em; }}
     .quick-list {{ list-style:none; padding:0; margin:0; }}
-    .quick-list li {{ padding:10px 0; border-bottom:1px dashed var(--border); }}
-    .quick-list li:last-child {{ border-bottom:none; }}
-    .quick-en {{ color:var(--muted); font-size:.88rem; margin-top:2px; }}
-    .quick-reason {{ color:#0369a1; font-size:.86rem; margin-top:2px; }}
-    .sources-box textarea {{ width:100%; font-family:ui-monospace,monospace; font-size:.85rem; padding:10px; border:1px solid var(--border); border-radius:8px; background:#f8fafc; }}
+    .quick-list li {{ padding:11px 0; border-top:1px solid var(--hairline); }}
+    .quick-list li:first-child {{ border-top:none; }}
+    .quick-head {{ display:flex; flex-wrap:wrap; gap:6px; align-items:baseline; }}
+    .quick-title {{ font-weight:600; color:var(--text); text-decoration:none; }}
+    .quick-title:hover {{ color:var(--accent); }}
+    .quick-head code {{ font-size:.78rem; color:#94a3b8; }}
+    .quick-en {{ color:var(--muted); font-size:.84rem; margin-top:2px; }}
+    .quick-reason {{ color:#475569; font-size:.86rem; margin-top:4px; line-height:1.6; }}
+    .sources-box textarea {{ width:100%; font-family:ui-monospace,monospace; font-size:.82rem; padding:10px 12px; border:1px solid var(--border); border-radius:8px; background:#f8fafc; color:var(--body); }}
     .sources-actions {{ margin-top:10px; display:flex; align-items:center; gap:12px; }}
-    .copy-btn {{ background:var(--accent); color:#fff; border:none; padding:8px 14px; border-radius:8px; cursor:pointer; font-weight:600; }}
-    .copy-btn:hover {{ background:#1d4ed8; }}
-    #copy-status {{ color:#047857; font-size:.88rem; font-weight:600; }}
-    @media (max-width:640px) {{ .paper-card {{ padding:16px; }} .source-pill {{ margin-left:0; }} }}
+    .copy-btn {{ background:#0f172a; color:#fff; border:none; padding:7px 14px; border-radius:6px; cursor:pointer; font-size:.84rem; font-weight:500; }}
+    .copy-btn:hover {{ background:var(--accent); }}
+    #copy-status {{ color:#047857; font-size:.84rem; font-weight:500; }}
+    @media (max-width:640px) {{ .paper-card {{ padding:18px 16px; }} .panel {{ padding:16px; }} .source-pill {{ margin-left:0; }} }}
   </style>
 </head>
 <body>
   <div class="container">
-    <a class="back-link" href="../index.html">← 返回历史索引</a>
+    <a class="back-link" href="../index.html">← 历史归档</a>
     <header class="hero">
-      <h1>🤖 {html.escape(config.site.title)} · {html.escape(report.date_iso)}</h1>
-      <p class="sub">{html.escape(report.date_display)} · 运行于 {html.escape(report.run_time_cst)} (CST) · 模式 {html.escape(report.mode)}</p>
+      <div class="hero-eyebrow">{html.escape(report.date_iso)} &middot; {html.escape(report.date_display)}</div>
+      <h1>{html.escape(config.site.title)}</h1>
+      <p class="sub">抓取 {report.total_scraped} 篇 &middot; 初筛 {report.total_prefiltered} 篇 &middot; 精读 {len(report.deep_dives)} 篇 &middot; 速览 {len(report.quick_summaries)} 篇 &middot; {html.escape(report.run_time_cst)} (CST)</p>
       <div class="stat-row">
-        <span class="stat-pill">抓取 {report.total_scraped} 篇</span>
-        <span class="stat-pill">预筛 {report.total_prefiltered} 篇</span>
-        <span class="stat-pill">精读 {len(report.deep_dives)} 篇</span>
-        <span class="stat-pill">速览 {len(report.quick_summaries)} 篇</span>
         {cat_badges}
       </div>
     </header>
@@ -461,42 +496,44 @@ def rebuild_index(output_root: Path, config: AppConfig) -> Path:
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>📚 {html.escape(config.site.title)}</title>
+  <title>{html.escape(config.site.title)}</title>
   <style>
-    :root {{ --bg:#f8fafc; --card:#fff; --border:#e2e8f0; --text:#0f172a; --muted:#475569; --accent:#2563eb; }}
+    :root {{ --bg:#f7f8fa; --card:#fff; --border:#e5e7eb; --hairline:#f1f5f9; --text:#0f172a; --muted:#64748b; --accent:#2563eb; }}
     * {{ box-sizing:border-box; }}
-    body {{ margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif; background:var(--bg); color:var(--text); }}
-    .container {{ max-width:960px; margin:0 auto; padding:28px 18px 60px; }}
-    .hero {{ background:linear-gradient(135deg,#0f172a,#1e3a8a); color:#fff; border-radius:14px; padding:24px 28px; margin-bottom:18px; }}
-    .hero h1 {{ margin:0 0 6px; font-size:1.6rem; }}
-    .hero p {{ margin:0; opacity:.9; font-size:.95rem; }}
-    .toolbar {{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:18px; }}
-    #search-input {{ flex:1; min-width:220px; padding:9px 12px; border:1px solid var(--border); border-radius:8px; font-size:.95rem; }}
+    body {{ margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif; background:var(--bg); color:var(--text); line-height:1.65; }}
+    .container {{ max-width:820px; margin:0 auto; padding:28px 18px 60px; }}
+    .hero {{ background:var(--card); border:1px solid var(--border); border-top:3px solid var(--accent); border-radius:10px; padding:22px 26px; margin-bottom:16px; }}
+    .hero h1 {{ margin:0 0 6px; font-size:1.45rem; font-weight:700; color:var(--text); }}
+    .hero p {{ margin:0; color:var(--muted); font-size:.9rem; }}
+    .toolbar {{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:16px; }}
+    #search-input {{ flex:1; min-width:220px; padding:8px 12px; border:1px solid var(--border); border-radius:8px; font-size:.9rem; background:#fff; }}
     .filter-group {{ display:flex; flex-wrap:wrap; gap:6px; }}
-    .filter-btn {{ border:1px solid #cbd5e1; background:#fff; padding:6px 12px; border-radius:999px; cursor:pointer; font-size:.85rem; }}
-    .filter-btn.active {{ background:var(--accent); color:#fff; border-color:var(--accent); }}
-    .day-card {{ background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 22px; margin-bottom:14px; }}
+    .filter-btn {{ border:1px solid var(--border); background:#fff; color:#475569; padding:5px 12px; border-radius:999px; cursor:pointer; font-size:.82rem; font-weight:500; }}
+    .filter-btn.active {{ background:var(--text); color:#fff; border-color:var(--text); }}
+    .day-card {{ background:var(--card); border:1px solid var(--border); border-radius:10px; padding:18px 22px; margin-bottom:14px; }}
     .day-top {{ display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap; }}
-    .day-top h2 {{ margin:0 0 4px; font-size:1.2rem; }}
+    .day-top h2 {{ margin:0 0 3px; font-size:1.15rem; }}
     .day-top h2 a {{ color:var(--text); text-decoration:none; }}
     .day-top h2 a:hover {{ color:var(--accent); }}
-    .day-sub {{ margin:0; color:var(--muted); font-size:.88rem; }}
+    .day-sub {{ margin:0; color:var(--muted); font-size:.85rem; }}
     .day-actions {{ display:flex; gap:8px; }}
-    .btn-view, .btn-md {{ text-decoration:none; padding:6px 12px; border-radius:8px; font-size:.85rem; font-weight:600; }}
-    .btn-view {{ background:var(--accent); color:#fff; }}
-    .btn-md {{ border:1px solid #cbd5e1; color:var(--text); background:#fff; }}
-    .day-tags {{ margin:10px 0 8px; display:flex; flex-wrap:wrap; gap:6px; }}
-    .tag-pill {{ background:#f1f5f9; border:1px solid #cbd5e1; border-radius:999px; padding:2px 8px; font-size:.78rem; }}
-    .preview-list {{ margin:0; padding-left:18px; color:#334155; font-size:.9rem; }}
-    .preview-list li {{ margin:4px 0; }}
-    .mini-score {{ color:#1d4ed8; font-weight:700; margin-right:4px; }}
-    .mini-meta {{ color:var(--muted); font-size:.82rem; }}
+    .btn-view, .btn-md {{ text-decoration:none; padding:5px 12px; border-radius:6px; font-size:.82rem; font-weight:500; }}
+    .btn-view {{ background:var(--text); color:#fff; }}
+    .btn-view:hover {{ background:var(--accent); }}
+    .btn-md {{ border:1px solid var(--border); color:#475569; background:#fff; }}
+    .btn-md:hover {{ border-color:var(--accent); color:var(--accent); }}
+    .day-tags {{ margin:10px 0 8px; display:flex; flex-wrap:wrap; gap:5px; }}
+    .tag-pill {{ background:#f1f5f9; color:#475569; border-radius:4px; padding:1px 7px; font-size:.75rem; }}
+    .preview-list {{ margin:0; padding-left:18px; color:#334155; font-size:.88rem; }}
+    .preview-list li {{ margin:5px 0; }}
+    .mini-score {{ display:inline-block; white-space:nowrap; background:#eff6ff; color:#1d4ed8; font-weight:600; font-size:.74rem; padding:1px 6px; border-radius:4px; margin-right:5px; }}
+    .mini-meta {{ color:#94a3b8; font-size:.8rem; }}
   </style>
 </head>
 <body>
   <div class="container">
     <header class="hero">
-      <h1>📚 {html.escape(config.site.title)}</h1>
+      <h1>{html.escape(config.site.title)}</h1>
       <p>{html.escape(config.site.subtitle)} · 共收录 {len(records)} 期日报</p>
     </header>
     <div class="toolbar">
