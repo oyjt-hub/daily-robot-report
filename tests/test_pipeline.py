@@ -577,3 +577,66 @@ def test_daily_report_from_dict_roundtrip_and_republish(tmp_path):
     assert (tmp_path / "archive" / "2026-11-23.html").exists()
     assert (tmp_path / "index.html").exists()
 
+
+def test_prepare_body_deduplicates_header_and_email_layout_clean(tmp_path):
+    from src.math_render import prepare_body_for_display
+    from src.notifiers.email_notifier import build_email_html
+
+    full_md = (
+        "**0. 论文标题**\n\n"
+        "- **英文标题**: LoCo-WAM: Test-Time Training\n"
+        "- **中文标题**: LoCo-WAM：长上下文\n"
+        "- **研究机构**: Amazon AGI, UCLA\n"
+        "- **一句话总结**: 在 $\\Phi_v$ 上做单步 LoRA 微调。\n\n"
+        "**1. 整体逻辑**\n\n"
+        "- **研究任务**: 长程操作。\n"
+    )
+    tldr, cleaned = prepare_body_for_display(full_md)
+    assert tldr == r"在 $\Phi_v$ 上做单步 LoRA 微调。"
+    assert "0. 论文标题" not in cleaned
+    assert "英文标题" not in cleaned
+    assert "研究机构" not in cleaned
+    assert "**1. 整体逻辑**" in cleaned
+
+    fallback_md = (
+        "**0. 论文标题**\n\n"
+        "- **英文标题**: Fallback Paper\n"
+        "- **研究机构**: 原文未提及\n"
+        "- **一句话总结**: 降级摘要。\n\n"
+        "Abstract: We study robot learning."
+    )
+    fb_tldr, fb_cleaned = prepare_body_for_display(fallback_md)
+    assert fb_tldr == "降级摘要。"
+    assert "0. 论文标题" not in fb_cleaned
+    assert "Abstract: We study robot learning." in fb_cleaned
+
+    cfg = _make_config(tmp_path)
+    p = Paper(id="2611.26853", title="LoCo-WAM: Test-Time Training")
+    sp = ScoredPaper(paper=p, score=10, title_zh="LoCo-WAM：长上下文", tags=["WAM", "VLA"])
+    dd = DeepDiveItem(
+        scored=sp,
+        title_zh="LoCo-WAM：长上下文",
+        affiliation="Amazon AGI, UCLA",
+        one_liner="fallback",
+        markdown_body=full_md,
+        fulltext_source="html",
+    )
+    report = DailyReport(
+        date_iso="2026-11-23",
+        date_display="Mon, 23 Nov 2026",
+        run_time_cst="2026-11-24 10:00:00",
+        mode="antigravity",
+        total_scraped=100,
+        total_prefiltered=20,
+        total_unseen=20,
+        deep_dives=[dd],
+    )
+    email_html = build_email_html(report, cfg)
+    assert "<th># / 分数</th>" not in email_html
+    assert "0. 论文标题" not in email_html
+    assert "一句话总结：" in email_html
+    assert "1. 整体逻辑" in email_html
+    assert "white-space:nowrap" in email_html
+    assert "$" not in email_html
+    assert "\\" not in email_html
+
