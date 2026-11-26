@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>具身智能与机器人科研日报 - 2026-11-25</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+      options: { skipHtmlTags: ['script', 'style', 'textarea', 'code', 'pre'] }
+    };
+    (function() {
+      var cdns = [
+        'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js',
+        'https://cdn.bootcdn.net/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js',
+        'https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js'
+      ];
+      var loaded = false;
+      function mathReady() {
+        return !!(window.MathJax && (window.MathJax.typesetPromise || window.MathJax.version));
+      }
+      function tryLoad(idx) {
+        if (loaded || mathReady() || idx >= cdns.length) return;
+        var finished = false;
+        var s = document.createElement('script');
+        s.id = idx === 0 ? 'MathJax-script' : ('MathJax-script-' + idx);
+        s.src = cdns[idx];
+        s.async = true;
+        var timer = setTimeout(function() {
+          if (finished || mathReady()) {
+            loaded = mathReady();
+            return;
+          }
+          finished = true;
+          try { s.remove(); } catch (e) {}
+          tryLoad(idx + 1);
+        }, 5000);
+        s.onload = function() {
+          clearTimeout(timer);
+          if (mathReady()) {
+            loaded = true;
+          } else if (!finished) {
+            finished = true;
+            tryLoad(idx + 1);
+          }
+        };
+        s.onerror = function() {
+          clearTimeout(timer);
+          if (finished) return;
+          finished = true;
+          tryLoad(idx + 1);
+        };
+        document.head.appendChild(s);
+      }
+      tryLoad(0);
+    })();
+  </script>
+  <style>
+    :root { --bg:#f7f8fa; --card:#ffffff; --border:#e5e7eb; --hairline:#f1f5f9; --text:#0f172a; --body:#334155; --muted:#64748b; --accent:#2563eb; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
+    .container { max-width:820px; margin:0 auto; padding:28px 18px 64px; }
+    .back-link { display:inline-block; margin-bottom:14px; color:var(--muted); text-decoration:none; font-size:.88rem; font-weight:500; }
+    .back-link:hover { color:var(--accent); }
+    .hero { background:var(--card); border:1px solid var(--border); border-top:3px solid var(--accent); padding:22px 26px; border-radius:10px; margin-bottom:16px; }
+    .hero-eyebrow { font-size:.8rem; color:var(--muted); margin-bottom:4px; }
+    .hero h1 { margin:0 0 6px; font-size:1.45rem; font-weight:700; color:var(--text); letter-spacing:-0.01em; }
+    .hero .sub { margin:0 0 12px; color:var(--muted); font-size:.9rem; }
+    .stat-row { display:flex; flex-wrap:wrap; gap:6px; }
+    .stat-pill { background:#f8fafc; border:1px solid var(--hairline); color:var(--muted); padding:2px 9px; border-radius:6px; font-size:.78rem; white-space:nowrap; }
+    .panel { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:20px 24px; margin-bottom:16px; }
+    .section-label { margin:0 0 12px; font-size:.85rem; font-weight:600; color:var(--muted); letter-spacing:.03em; }
+    .toc-panel ol { list-style:none; padding:0; margin:0; counter-reset:toc; }
+    .toc-panel li { counter-increment:toc; padding:8px 0; border-top:1px solid var(--hairline); display:flex; flex-wrap:wrap; align-items:baseline; gap:8px; font-size:.93rem; }
+    .toc-panel li:first-child { border-top:none; }
+    .toc-panel li::before { content:counter(toc, decimal-leading-zero); font-size:.78rem; font-weight:600; color:#94a3b8; min-width:20px; }
+    .toc-panel li a { text-decoration:none; color:var(--text); font-weight:500; }
+    .toc-panel li a:hover .toc-title { color:var(--accent); }
+    .toc-panel li small { color:#94a3b8; font-size:.8rem; }
+    .warn-panel { border-color:#fcd34d; background:#fffbeb; }
+    .paper-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:24px 26px; margin-bottom:18px; }
+    .paper-header { margin-bottom:14px; }
+    .paper-meta { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-bottom:8px; }
+    .paper-idx { font-size:.8rem; font-weight:600; color:#94a3b8; margin-right:2px; }
+    .paper-header h2 { margin:0 0 4px; font-size:1.22rem; font-weight:700; line-height:1.4; color:var(--text); }
+    .title-en { margin:0 0 6px; font-size:.9rem; color:var(--muted); line-height:1.45; }
+    .aff-line { margin:0 0 12px; color:#94a3b8; font-size:.84rem; }
+    .aff-line code { background:#f8fafc; color:var(--muted); padding:1px 6px; border-radius:4px; font-size:.8rem; }
+    .score-badge { display:inline-block; white-space:nowrap; background:#eff6ff; color:#1d4ed8; font-weight:600; font-size:.76rem; padding:1px 7px; border-radius:4px; }
+    .tag-pill { display:inline-block; white-space:nowrap; background:#f1f5f9; color:#475569; font-size:.74rem; padding:1px 7px; border-radius:4px; }
+    .source-pill { font-size:.76rem; color:#94a3b8; margin-left:auto; }
+    .paper-links { display:flex; flex-wrap:wrap; gap:6px; }
+    .btn-link { display:inline-block; padding:3px 10px; border-radius:6px; border:1px solid var(--border); color:var(--body); background:#fff; text-decoration:none; font-size:.8rem; font-weight:500; }
+    .btn-link:hover { border-color:var(--accent); color:var(--accent); }
+    .btn-code { color:#047857; border-color:#d1fae5; background:#f0fdf4; }
+    .tldr-box { background:#f8fafc; border-left:3px solid var(--accent); padding:10px 14px; border-radius:0 6px 6px 0; margin:0 0 16px; font-size:.93rem; color:#1e293b; line-height:1.68; }
+    .paper-body { font-size:.94rem; color:var(--body); line-height:1.75; }
+    .paper-body > p { margin:14px 0 6px; }
+    .paper-body > p > strong:only-child { display:block; padding-bottom:4px; border-bottom:1px solid var(--hairline); color:var(--text); font-size:.95rem; }
+    .paper-body ul { margin:6px 0 12px; padding-left:20px; }
+    .paper-body li { margin:5px 0; }
+    .paper-body code { background:#f1f5f9; padding:1px 5px; border-radius:4px; font-size:.85em; }
+    .quick-list { list-style:none; padding:0; margin:0; }
+    .quick-list li { padding:11px 0; border-top:1px solid var(--hairline); }
+    .quick-list li:first-child { border-top:none; }
+    .quick-head { display:flex; flex-wrap:wrap; gap:6px; align-items:baseline; }
+    .quick-title { font-weight:600; color:var(--text); text-decoration:none; }
+    .quick-title:hover { color:var(--accent); }
+    .quick-head code { font-size:.78rem; color:#94a3b8; }
+    .quick-en { color:var(--muted); font-size:.84rem; margin-top:2px; }
+    .quick-reason { color:#475569; font-size:.86rem; margin-top:4px; line-height:1.6; }
+    .sources-box textarea { width:100%; font-family:ui-monospace,monospace; font-size:.82rem; padding:10px 12px; border:1px solid var(--border); border-radius:8px; background:#f8fafc; color:var(--body); }
+    .sources-actions { margin-top:10px; display:flex; align-items:center; gap:12px; }
+    .copy-btn { background:#0f172a; color:#fff; border:none; padding:7px 14px; border-radius:6px; cursor:pointer; font-size:.84rem; font-weight:500; }
+    .copy-btn:hover { background:var(--accent); }
+    #copy-status { color:#047857; font-size:.84rem; font-weight:500; }
+    @media (max-width:640px) { .paper-card { padding:18px 16px; } .panel { padding:16px; } .source-pill { margin-left:0; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back-link" href="../index.html">← 历史归档</a>
+    <header class="hero">
+      <div class="hero-eyebrow">2026-11-25 &middot; Wed, 25 Nov 2026</div>
+      <h1>具身智能与机器人科研日报</h1>
+      <p class="sub">抓取 946 篇 &middot; 初筛 176 篇 &middot; 精读 10 篇 &middot; 速览 86 篇 &middot; 2026-11-26 09:35:13 (CST)</p>
+      <div class="stat-row">
+        <span class='stat-pill'>cs.RO: 111/111</span> <span class='stat-pill'>cs.CV: 60/302</span> <span class='stat-pill'>cs.LG: 24/233</span> <span class='stat-pill'>cs.AI: 46/300</span>
+      </div>
+    </header>
+    <section class='panel toc-panel'><h3 class='section-label'>本期精读目录 · 10 篇</h3><ol><li><a href='#paper-1'><span class='score-badge'>9分</span> <span class='toc-title'>Hi3R-VLA：将语义与动作锚定于显式三维几何的具身操作策略</span></a> <small>(2611.31535)</small></li><li><a href='#paper-2'><span class='score-badge'>9分</span> <span class='toc-title'>看见却触不到：指令捷径如何在视觉-语言-动作模型中压制视觉定位</span></a> <small>(2611.32206)</small></li><li><a href='#paper-3'><span class='score-badge'>9分</span> <span class='toc-title'>G0.7：面向长上下文与大规模预训练的快速世界-动作模型扩展</span></a> <small>(2611.31822)</small></li><li><a href='#paper-4'><span class='score-badge'>9分</span> <span class='toc-title'>FoveaWAM：面向动态操作的角色感知四维世界-动作建模</span></a> <small>(2611.31705)</small></li><li><a href='#paper-5'><span class='score-badge'>9分</span> <span class='toc-title'>iWAM：无需显式生成未来视频的高效世界-动作模型动作预测</span></a> <small>(2611.33141)</small></li><li><a href='#paper-6'><span class='score-badge'>9分</span> <span class='toc-title'>EffectWAM：学习面向机器人操作的动作锚定视觉效应世界模型</span></a> <small>(2611.32053)</small></li><li><a href='#paper-7'><span class='score-badge'>9分</span> <span class='toc-title'>DexWAC：面向灵巧操作的统一世界-动作-评价联合模型</span></a> <small>(2611.32654)</small></li><li><a href='#paper-8'><span class='score-badge'>9分</span> <span class='toc-title'>ReFocus：面向长程机器人操作强化学习的进度引导自适应专项练习框架</span></a> <small>(2611.32639)</small></li><li><a href='#paper-9'><span class='score-badge'>9分</span> <span class='toc-title'>VLA 负责执行，代码负责恢复：三维技能包络桥接智能体操作中的组合断层</span></a> <small>(2611.32245)</small></li><li><a href='#paper-10'><span class='score-badge'>9分</span> <span class='toc-title'>RoboHarness-RL：面向 VLM 工具调用机器人操作的智能体强化学习</span></a> <small>(2611.32016)</small></li></ol></section>
+    
+    
+            <article class="paper-card" id="paper-1">
+              <div class="paper-header">
+                <div class="paper-meta">
+                  <span class="paper-idx">#01</span>
+                  <span class="score-badge">9分</span>
+                  <span class='tag-pill'>VLA</span>
+                  <span class="source-pill">来源: html</span>
+                </div>
+                <h2>Hi3R-VLA：将语义与动作锚定于显式三维几何的具身操作策略</h2>
+                <p class="title-en">Hi3R-VLA: Grounding Semantics and Actions in 3D</p>
+                <p class="aff-line">Inria, École normale supérieure, CNRS, PSL Research University &middot; <code>2611.31535</code></p>
+                <div class="paper-links">
+                  <a class="btn-link" href="https://arxiv.org/abs/2611.31535" target="_blank">arXiv</a>
+                  <a class="btn-link" href="https://arxiv.org/pdf/2611.31535.pdf" target="_blank">PDF</a>
+                  <a class="btn-link" href="https://arxiv.org/html/2611.31535" target="_blank">HTML 原文</a>
+                  <a class='btn-link btn-code' href='https://cshizhe.github.io/projects/hi3r_vla.html' target='_blank'>Code/Project</a>
+                </div>
+              </div>
+              <div class="tldr-box"><strong>一句话总结：</strong>以不足 2.5 亿可训练参数将视觉特征、语言指令与可执行三维锚点动作统一到同一三维坐标系，在五大操作基准上全面超越数倍参数量的主流 VLA 与 WAM。</div>
+              <div class="paper-body markdown-body">
+                <p><strong>1. 整体逻辑</strong></p>
+<ul>
+<li><strong>痛点与动机</strong>: 现有 3D VLA 模型往往仅将点云作为附加输入通道，未解决三大几何割裂问题：点云缺乏细粒度任务语义、动作输出仍以隐式增量（delta）为主而未锚定在观察点云的同一三维坐标系中、以及三维位置编码在近距离操作下缺乏空间分辨力。</li>
+<li><strong>核心洞察</strong>: 必须将视觉语义、语言条件和低层控制动作同时锚定在显式 3D 几何空间中，并通过“先全局语境、后局部精细几何”的粗到细（coarse-to-fine）空间交互生成动作。</li>
+<li><strong>闭环机制</strong>: 将多视角 RGB-D 重建为在线点云，通过多阶段空间对齐图像-点云融合和 AdaLN 语言调制丰富点云语义；随后动作专家在同一 3D 坐标系下预测可执行末端位置锚点，并利用高频率敏感的 3D RoPE 注意力在多尺度点特征上完成粗到细解码。</li>
+</ul>
+<p><strong>2. 技术拆解</strong></p>
+<ul>
+<li><strong>跨模态 3D 语义融合</strong>: 在点云编码器（基于 PTv3 架构，具体网络层数在本文节选中未提及）内部进行多阶段（All stages）空间对齐图像特征融合，并采用基于全局文本嵌入的 AdaLN 调制点云特征（消融显示 AdaLN 在更低计算开销下优于 token 级 cross-attention）；同时在动作专家中保留直接图像条件分支，以兼容 DROID 腕部相机等缺乏可靠深度的视角。</li>
+<li><strong>显式 3D 动作空间锚点（Spatial Anchors）</strong>: 对比了无锚点、辅助前缀锚点（Auxiliary anchor）与可执行锚点（Executable anchor）。在 RoboCasa24 等增量控制环境中，模型直接预测绝对末端执行器位置作为可执行锚点并参与 3D RoPE 几何计算，执行时再换算为位置增量；在 RoboTwin 2.0 中则将绝对末端位姿作为辅助锚点与关节角目标共同预测。</li>
+<li><strong>高敏感度 3D RoPE 与粗到细解码</strong>: 采用频率参数敏感的 3D RoPE（对比 Utonia 的低敏参数 $\omega_{\max}=1, \theta=10$ 及傅里叶正弦特征）刻画动作查询与点云之间的相对三维位移；动作解码器沿层数递增逐步接入从粗到细的多尺度点特征。</li>
+<li><strong>预训练策略</strong>: 对比了从零训练、自监督 PTv3 点编码器初始化与 DROID 真机数据集端到端策略预训练（参数总量少于 250M）。</li>
+</ul>
+<p><strong>3. 实验结果</strong></p>
+<ul>
+<li><strong>RoboCasa24（24 任务，每任务 50 条人类遥操作演示，3 种子平均）</strong>: Hi3R-VLA（0.25B）取得 <strong>78.8 ± 0.8%</strong> 平均成功率，显著超越 SA-WAM（2B，76.6%）、Cosmos Policy（2B，67.1%）、$\pi_{0.5}$ + SeeR-VLA（&gt;3.2B，61.5%）及使用 300 条演示的 GR00T-N1.5 + HAMLET（66.4%）。</li>
+<li><strong>RLBench-10Task（关键帧策略，$H=2$）</strong>: Hi3R-VLA（0.25B）取得 <strong>90.6 ± 0.3%</strong> 平均成功率，超越 PointACT（0.3B，82.3%）、$\pi_{0.5}$（3.2B，77.4%）及 HybridVLA（7B，74%），在 <code>water plants</code>（74.0%）和 <code>wine at rack</code>（95.0%）等精密放置任务提升最明显。</li>
+<li><strong>DexJoCo（10 任务单双臂 16-DoF Allegro 灵巧手）</strong>: 单策略多任务联合训练取得 <strong>77.3 ± 1.4%</strong>，领先 PointWAM（69.0%）、GR00T N1.6（57.3%）、FastWAM（52.9%）与 $\pi_{0.5}$（50.0%），双臂困难任务（如 <code>assembly /B</code> 从 9.3% 提至 34.7%，<code>hanoi /B</code> 从 50.0% 提至 65.3%）优势突出。</li>
+<li><strong>RoboTwin 2.0 与预训练收益</strong>: 无 DROID 预训练时 Clean/Randomized 为 86.2% / 33.4%，加入 DROID 预训练后提升至 <strong>90.1% / 50.5%</strong>（随机化场景 +17.1 pp）；RoboCasa24 在每任务仅 5 条演示时 DROID 预训练带来 +18.6 pp 增益（54.3% 超过无预训练 10 条演示的 50.8%）。注：摘要提及的 DexSuite 与真机实验具体数值在当前全文节选中未包含。</li>
+</ul>
+              </div>
+            </article>
+            
+            <article class="paper-card" id="paper-2">
+              <div class="paper-header">
+                <div class="paper-meta">
+                  <span class="paper-idx">#02</span>
+                  <span class="score-badge">9分</span>
+                  <span class='tag-pill'>VLA</span>
+                  <span class="source-pill">来源: html</span>
+                </div>
+                <h2>看见却触不到：指令捷径如何在视觉-语言-动作模型中压制视觉定位</h2>
+                <p class="title-en">Seeing Is Not Reaching: Instruction Shortcuts Override Visual Grounding in Vision-Language-Action Models</p>
+                <p class="aff-line">Australian National University, CSIRO, GE Research &middot; <code>2611.32206</code></p>
+                <div class="paper-links">
+                  <a class="btn-link" href="https://arxiv.org/abs/2611.32206" target="_blank">arXiv</a>
+                  <a class="btn-link" href="https://arxiv.org/pdf/2611.32206.pdf" target="_blank">PDF</a>
+                  <a class="btn-link" href="https://arxiv.org/html/2611.32206" target="_blank">HTML 原文</a>
+                  <a class='btn-link btn-code' href='https://github.com/QZhang2111/psg' target='_blank'>Code/Project</a>
+                </div>
+              </div>
+              <div class="tldr-box"><strong>一句话总结：</strong>揭示 $\pi_{0.5}$ 在物体被移动后其实仍能准确定位目标（Seeing），但指令到动作的直接捷径通路压制了视觉定位信号（Not Reaching），据此提出免训练的通路分离引导（PSG）显著修复到达与任务成功率。</div>
+              <div class="paper-body markdown-body">
+                <p><strong>1. 整体逻辑</strong></p>
+<ul>
+<li><strong>痛点与动机</strong>: 在六款主流 VLA（OpenVLA-OFT、SmolVLA、TurboVLA、$\pi_0$-FAST、$\pi_0$、$\pi_{0.5}$）上测试物体重定位与指令替换时，策略常机械地伸向训练时的旧位置或执行场景原有任务。人们通常以为这是视觉定位丢失所致。</li>
+<li><strong>核心洞察</strong>: 注意力诊断显示 $\pi_0$ 的名词注意力未能跟随移动物体，而 $\pi_{0.5}$ 的主视角名词注意力实际已准确锁定被移动的目标物体；真正的罪魁祸首是<strong>场景捷径</strong>与<strong>指令捷径</strong>——指令 token 直接向动作专家传递了训练位置的强记忆偏置，压制了主视角图像介导的定位信号。</li>
+<li><strong>闭环机制</strong>: 通过精细设计的因果注意力掩码分别阻断“图像介导定位通路（$I_m \nrightarrow N$）”和“直接指令-动作通路（$A \nrightarrow \ell$）”，验证两条通路对流匹配速度场的相反作用；进而在推理采样阶段同时放大定位效应、抑制直接捷径效应，实现零训练纠偏。</li>
+</ul>
+<p><strong>2. 技术拆解</strong></p>
+<ul>
+<li><strong>双通路因果诊断</strong>: 在任务配对场景与移动物体场景中，若切断 $I_m \nrightarrow N$（主视角图像 token 无法注意指令中的名词短语 $N$），移位目标的到达率归零；而切断 $A \nrightarrow \ell$（动作 token 无法直接注意指令 $\ell$），原场景仍保持 199/200 的到达率，但移位目标的到达数反而从 29/200 翻倍提升至 64/200。</li>
+<li><strong>通路分离引导（PSG）</strong>: 在流匹配采样每一步（$K=10$ 步 Euler 积分）计算三个速度场：原始速度 $v$、遮断主视角对名词短语注意力的 $v[I_m \nrightarrow N]$（前缀重编码一次保留 KV 缓存 $\mathcal{C}_g$）、以及遮断动作对指令注意力的 $v[A \nrightarrow \ell]$（复用原始 KV 缓存 $\mathcal{C}$）。</li>
+<li><strong>引导公式与推理代价</strong>: 定义定位效应 $v_g = v - v[I_m \nrightarrow N]$ 与直接捷径效应 $v_d = v - v[A \nrightarrow \ell]$，仅对 6 个平动/旋转动作维度更新合成速度 $\tilde{v} = v + a\,v_g - b\,v_d$（默认 $a=5, b=1$），夹爪维度保持原速度 $v$。每次查询增加 1 次前缀前向与每 Euler 步 2 次动作专家前向，单张 24 GB 显卡上耗时由 0.154–0.172 s 增至 0.245–0.257 s。</li>
+</ul>
+<p><strong>3. 实验结果</strong></p>
+<ul>
+<li><strong>LIBERO-PRO Position 扰动</strong>: 在不更新任何权重、不用外部目标框的情况下，PSG 将 $\pi_{0.5}$ 平均 Reach 从 62.6% 提升至 <strong>76.5%</strong>（成功率 44.7%），其中 Object 子集 Reach 由 <strong>22.0% 跃升至 52.6%</strong>，任务成功率由 <strong>16.6% 翻倍至 40.8%</strong>（如牛奶瓶在 50 轮中从 0 次到达提升至 46 次），整体逼近需要重训练的 RSS（78.7% Reach / 46.1% 成功率）。</li>
+<li><strong>不同位移距离与原有能力保持</strong>: 在 LIBERO-Goal 不同移动距离下（&lt;20 cm / 20–30 cm / &gt;30 cm），Reach 分别达 <strong>100% / 100% / 50%</strong>（原版 $\pi_{0.5}$ 为 100% / 55% / 24%），其中 &lt;20 cm 组成功率从 47.5% 提升至 <strong>85.0%</strong>；同时在原始 LIBERO 上维持 <strong>95.2%</strong> 成功率（原版 96.7%），而整句对比引导 CAG 会导致原版 LIBERO 跌至 87.7% 并加剧指令捷径。</li>
+<li><strong>LIBERO-PRO Task 与 LIBERO-CF</strong>: LIBERO-PRO Task 的 Reach 由 44.6% 升至 <strong>50.4%</strong>（成功率 29.6% -&gt; 34.3%）；LIBERO-CF 平均 Reach 由 17.7% 升至 <strong>30.9%</strong>（成功率 12.3% -&gt; <strong>18.2%</strong>），在免训练条件下追平需额外训练的 CAG-VA（30.7% / 19.0%）。</li>
+</ul>
+              </div>
+            </article>
+            
+            <article class="paper-card" id="paper-3">
+              <div class="paper-header">
+                <div class="paper-meta">
+                  <span class="paper-idx">#03</span>
+                  <span class="score-badge">9分</span>
+                  <span class='tag-pill'>WAM</span> <span class='tag-pill'>VLA</span>
+                  <span class="source-pill">来源: html</span>
+                </div>
+                <h2>G0.7：面向长上下文与大规模预训练的快速世界-动作模型扩展</h2>
+                <p class="title-en">G0.7: Scaling Up a Fast World Action Model with Long Context</p>
+                <p class="aff-line">Galaxea Team &middot; <code>2611.31822</code></p>
+                <div class="paper-links">
+                  <a class="btn-link" href="https://arxiv.org/abs/2611.31822" target="_blank">arXiv</a>
+                  <a class="btn-link" href="https://arxiv.org/pdf/2611.31822.pdf" target="_blank">PDF</a>
+                  <a class="btn-link" href="https://arxiv.org/html/2611.31822" target="_blank">HTML 原文</a>
+                  
+                </div>
+              </div>
+              <div class="tldr-box"><strong>一句话总结：</strong>将 Fast-WAM 扩展到最长 5 分钟滑动窗口 KV 缓存与大规模多具身遥操作+人类第一视角视频预训练，推理仅需 60 ms 并原生支持 RTC 异步执行与视频上下文学习（ICL）。</div>
+              <div class="paper-body markdown-body">
+                <p><strong>1. 整体逻辑</strong></p>
+<ul>
+<li><strong>痛点与动机</strong>: 现有 WAM（如 DreamZero、LingBot-VA）部署时需先生成未来视频帧再解码动作，延迟高达数百毫秒；同时绝大多数 VLA/WAM 仅依赖单帧或极短历史，难以应付长程遮挡记忆与视频演示上下文学习，且公开 WAM 的预训练语料规模有限。</li>
+<li><strong>核心洞察</strong>: 视频预测的核心价值在于<strong>训练期塑形时空物理表征</strong>，而非测试期显式合成图像；将长上下文自回归（最长 5 分钟干净视频潜变量 KV 缓存）与人类第一视角（ego）手部动作统一建模，可在不增测试延迟的前提下同时解锁长程记忆、视频 ICL 与 OOD 泛化。</li>
+<li><strong>闭环机制</strong>: 预训练阶段采用双专家架构与随机注意力掩码同时训练 IDM 和 Fast 两条路径；推理时直接沿 Fast 路径在缓存上下文上做 5 步流匹配去噪输出 16 步动作块，并天然契合 Real-Time Chunking（RTC）实现无停顿闭环控制。</li>
+</ul>
+<p><strong>2. 技术拆解</strong></p>
+<ul>
+<li><strong>双专家与原生 5 分钟长上下文</strong>: 语言专家在每一层对共享视觉/动作专家进行条件调制，处理因果视频 VAE 潜变量、本体状态与 16 步动作块（动作与视频频率比 4:1）。从预训练伊始即在可变长度 $K$ 的多块序列上做分块因果自回归训练，并加入随机位置块偏移以泛化 RoPE 位置编码，将最多 5 分钟真实观测的干净潜变量保存在滑动窗口 KV 缓存中（无需额外记忆压缩头）。</li>
+<li><strong>单权重双模式（Fast / IDM）与 RTC</strong>: 训练时以 $p_{\text{IDM}}=0.5$ 随机遮蔽动作 token 对当前块未来视频潜变量的注意力（视频预测始终保留监督）。部署时 Fast 模式跳过视频去噪，仅用 5 步直接解码动作块：在单卡 RTX 5090（FP8）上仅需 <strong>60 ms</strong>（较 IDM 提速 <strong>7.6x</strong>；未优化 BF16 eager 模式下 156 ms 对比 457 ms），且同权重下两种模式准确率持平，可直接配合 RTC 异步执行。</li>
+<li><strong>大规模多源数据与三层语言标注</strong>: 融合 Galaxea R1 Pro/Lite 车队数据及 DROID、RoboMIND、BridgeData，并引入头戴式人类第一视角日常操作视频。对遥操作轨迹施加平滑度过滤与三粒度标注（整段复杂指令、子目标复合指令、数秒级原子标签）；从人类视频提取 3D 手部轨迹，映射为对齐 R1 夹爪 TCP 坐标系（+Z 沿手指）的 6-DoF 腕部末端位姿加五指指尖位置。</li>
+</ul>
+<p><strong>3. 实验结果</strong></p>
+<ul>
+<li><strong>五大仿真基准套件（平均分 70.8）</strong>: 大幅领先 OpenWAM（43.9）、G0.5（39.2）和 $\pi_{0.5}$（33.9）。在依赖长时记忆的 RMBench 达 <strong>86.2%</strong>（单帧基线均 &lt;12%），RoboTwin 2.0 C2R 达 <strong>79.4%</strong>（对比 OpenWAM 69.0%），VLABench 达 <strong>63.3%</strong>，LIBERO w. OOD 达 <strong>83.5%</strong>（LIBERO-Plus 92.5%，LIBERO-Para 88.3%），RoboDojo 达 <strong>41.46</strong>（对比 G0.5 18.95）。</li>
+<li><strong>真机零样本部署</strong>: 不经任何任务微调，在 Galaxea R1 Pro（25 轮）与 R1 Lite（50 轮）Pick-and-Place 上分别达到 <strong>48%</strong> 与 <strong>54%</strong> 成功率（高于 G0.5 的 36%/46% 与 Dream-1 的 32%）；消融显示若去掉人类 ego 视频（G0.7-Robot），R1 Lite 零样本成功率骤降至 <strong>12%</strong>。</li>
+<li><strong>视频上下文学习（ICL）与真机长程微调</strong>: 在 Shell Game（遮挡追踪）和 Sorting by Example 上经 ICL mid-training 后平均达到 <strong>96.7% ID / 93.3% OOD</strong>（人类 ego 数据单独带来 OOD +26.7 pp 跃升）。7 项真机后训练任务平均进度达 <strong>86.9%</strong>（G0.5 为 64.3%，$\pi_{0.5}$ 为 41.7%），其中 5 小时数据的折纸盒达 90% 成功率、做柠檬茶达 100%、装袋达 63%；20-shot 工具使用平均进度达 82%。</li>
+</ul>
+              </div>
+            </article>
+            
+            <article class="paper-card" id="paper-4">
+              <div class="paper-header">
+                <div class="paper-meta">
+                  <span class="paper-idx">#04</span>
+                  <span class="score-badge">9分</span>
+                  <span class='tag-pill'>WAM</span>
+                  <span class="source-pill">来源: html</span>
+                </div>
+                <h2>FoveaWAM：面向动态操作的角色感知四维世界-动作建模</h2>
+                <p class="title-en">FoveaWAM: Role-Aware 4D World-Action Modeling for Dynamic Manipulation</p>
+                <p class="aff-line">Beijing Zhongguancun Academy, Peking University, Beijing Academy of Artificial Intelligence &middot; <code>2611.31705</code></p>
+                <div class="paper-links">
+                  <a class="btn-link" href="https://arxiv.org/abs/2611.31705" target="_blank">arXiv</a>
+                  <a class="btn-link" href="https://arxiv.org/pdf/2611.31705.pdf" target="_blank">PDF</a>
+                  <a class="btn-link" href="https://arxiv.org/html/2611.31705" target="_blank">HTML 原文</a>
+                  <a class='btn-link btn-code' href='https://foveawam.github.io/' target='_blank'>Code/Project</a><a class='btn-link btn-code' href='https://github.com/teal024/FoundationPose-plus-plus' target='_blank'>Code/Project</a>
+                </div>
+              </div>
+              <div class="tldr-box"><strong>一句话总结：</strong>依据接触误差上界将动态场景按角色分层预测（目标刚体 SE(3) 轨迹、周围环境稀疏 3D 流、静态背景仅看当前帧），以 15.1 ms 延迟在场景持续运动的 OnTimeBench 上达到 82.1% 成功率。</div>
+              <div class="paper-body markdown-body">
+                <p><strong>1. 整体逻辑</strong></p>
+<ul>
+<li><strong>痛点与动机</strong>: 操作运动物体时，策略推理耗时越长，动作执行时的场景状态就偏移得越远。整场景视频预测（如视频 WAM）算力开销过大导致动作严重滞后，而只看目标的预测又会丢失周围障碍物与运动载体接触信息；此外传统仿真评测在策略推理时暂停物理（Paused），掩盖了真实延迟代价。</li>
+<li><strong>核心洞察</strong>: 通过接触误差上界推导发现：唯有决定接触的目标位姿（含旋转力臂误差 $r\theta$）随提前期 $\ell$ 增长且需毫米级精度；周围环境只需提供避障余量与运动驱动，粗粒度预报即可；静态环境误差不随时间增长，仅凭当前帧足够。</li>
+<li><strong>闭环机制</strong>: 在冻结 MAE ViT-B/16 上构建 271.8M 参数 Transformer，用目标过去 SE(3) 历史、当前 RGB-D 特征联合监督未来目标 SE(3) 轨迹与周围 196 个稀疏 3D 流点；部署时完全不运行预测头直接输出 8 步动作块，以 15.1 ms（RTX 5090）完成单次推理并闭环执行。</li>
+</ul>
+<p><strong>2. 技术拆解</strong></p>
+<ul>
+<li><strong>角色感知 4D 精度分配</strong>: 
+  1) <strong>目标（Target）</strong>: 接收 16 个 token 编码的过去 SE(3) 位姿历史（对捕获速度与加速度至关重要），训练期监督未来 SE(3) 轨迹；
+  2) <strong>周边（Context）</strong>: 训练期监督 196 个稀疏 3D 运动流点，在接触区域附近塑形图像 patch 表征，无需 3,136 点稠密流；
+  3) <strong>静态场景（Static）</strong>: 仅保留当前观测帧特征与辅助外观损失 $\mathcal{L}_{\text{aux}}$。</li>
+<li><strong>高效主干与时序执行协议</strong>: 12 层宽 1024、16 头的 Transformer（271.8M 可训练参数）接在冻结的 MAE ViT-B/16 之后；推理时跳过未来预测头，在 RTX 5090 compiled BF16 下达到 <strong>15.1 ms</strong> p95 time-to-action（约为 OpenWAM-$\alpha$ 151.7 ms 与 DynamicWAM 149.6 ms 的 <strong>1/10</strong>）。</li>
+<li><strong>OnTimeBench 动态评测基准</strong>: 基于 MuJoCo/robosuite 构建 14 项动态操作任务（谐波抓取、传送带抓取、旋转容器放置、动态穿线、斜坡滚球/滑块/罐子捕获、撞击后抓取等，11,200 训练 / 1,400 测试演示），采用 <strong>Native 异步执行协议</strong>（50 ms 控制周期，推理期间物理持续推进并跳过过期前序指令）。</li>
+</ul>
+<p><strong>3. 实验结果</strong></p>
+<ul>
+<li><strong>OnTimeBench（14 任务）</strong>: 在 Native 真实延迟下取得 <strong>82.1%</strong> 成功率，超越最强基线 PUMA（61.4%）<strong>20.8 个百分点</strong>，也大幅高于 $\pi_{0.5}$（54.4%）、$\pi_{0.5}$+SE(3)（58.7%）、DynamicVLA（51.1%）、OpenWAM-$\alpha$（46.1%）、ACT（41.6%）与 DynamicWAM（41.1%）；在世界暂停（Paused）下达 <strong>90.3%</strong>，附加 +150 ms 延迟下仍居第一（34.1%）。</li>
+<li><strong>DOMINO（24 项单臂 Franka 任务）</strong>: 在推理暂停物理的评测器下仍取得 <strong>46.8% SR / 62.0 MS</strong>，领先 DynamicWAM（26.9% SR / 41.4 MS）近 20 点，尤其在持续追踪任务（Track）上达 <strong>55.5%</strong>（基线 31.9%）。</li>
+<li><strong>消融与真机验证</strong>: 去掉 SE(3) 历史输入导致 Native 成功率暴跌 <strong>19.6 pp</strong>（旋转任务跌 24.0 pp）；去掉未来预测监督或稀疏流各下降约 4.2–4.3 pp（且仅在 Native 实时场景显现，Paused 下被掩盖）。在 Flexiv Rizon 4s 机械臂（在线 FoundationPose/FP++ 跟踪，端到端 p95 延迟 25.17 ms）6 项真机动态任务上取得 <strong>48.3%</strong> 平均成功率，显著超越 $\pi_{0.5}$（30.8%）与 ACT（1.7%）。</li>
+</ul>
+              </div>
+            </article>
+            
+            <article class="paper-card" id="paper-5">
+              <div class="paper-header">
+                <div class="paper-meta">
+                  <span class="paper-idx">#05</span>
+                  <span class="score-badge">9分</span>
+                  <span class='tag-pill'>WAM</span>
+                  <span class="source-pill">来源: html</span>
+                </div>
+                <h2>iWAM：无需显式生成未来视频的高效世界-动作模型动作预测</h2>
+                <p class="title-en">iWAM: Efficient Action Prediction from World Models without Explicit Future Prediction</p>
+                <p class="aff-line">Carnegie Mellon University &middot; <code>2611.33141</code></p>
+                <div class="paper-links">
+                  <a class="btn-link" href="https://arxiv.org/abs/2611.33141" target="_blank">arXiv</a>
+                  <a class="btn-link" href="https://arxiv.org/pdf/2611.33141.pdf" target="_blank">PDF</a>
+                  <a class="btn-link" href="https://arxiv.org/html/2611.33141" target="_blank">HTML 原文</a>
+                  <a class='btn-link btn-code' href='https://github.com/arhanjain/sim-evals' target='_blank'>Code/Project</a><a class='btn-link btn-code' href='https://github.com/isaac-sim/IsaacSim' target='_blank'>Code/Project</a>
+                </div>
+              </div>
+              <div class="tldr-box"><strong>一句话总结：</strong>利用双向流图（bidirectional flow map）将视频世界模型的多步未来想象摊销为单次噪声到干净的前向传播中间激活，在真机与仿真未见环境中以约 1/6 延迟复现甚至超越完整 IDM 的泛化精度。</div>
+              <div class="paper-body markdown-body">
+                <p><strong>1. 整体逻辑</strong></p>
+<ul>
+<li><strong>痛点与动机</strong>: Imagine-then-Act（IDM）型 WAM 在每步控制前需多步去噪生成未来视频，延迟高昂；而完全跳过未来预测、仅用当前帧特征的 FastWAM 在场景高度受限的 LIBERO 上虽接近 IDM，却在未来分布高度多样（MSE 高出 10 倍以上）的 DROID 未见环境中彻底崩溃（仿真 9.2%、真机 13.3%）。</li>
+<li><strong>核心洞察</strong>: 有效的未来代理表征无需像素级生成未来帧，只需在单次视频主干评估中暴露足以区分不同未来走势的内部激活特征；但在高多样性数据集上，训练期该激活必须与演示轨迹对应的具体未来精确对齐（若只采样独立随机噪声“1-Step from Prior”，DROID 成功率低于 3%）。</li>
+<li><strong>闭环机制</strong>: 阶段 1 训练具备双向任意两时刻传输能力的快捷流模型（Bidirectional Flow Map）与免引导训练（GFT）；阶段 2 用反向（clean-to-noise）流图把演示未来视频反演至对应噪声端点，再从该端点做单次正向（noise-to-clean）传播提取引导激活，以此监督训练 1B 参数的动作专家；推理时直接从先验采样噪声做单次前向即可条件解码动作。</li>
+</ul>
+<p><strong>2. 技术拆解</strong></p>
+<ul>
+<li><strong>双向流图与免引导训练（GFT）</strong>: 基于 Wan2.2-TI2V-5B（57,774 条 DROID 轨迹、14.7M 帧，32 步动作块对应 16 帧未来视频）微调全量 DiT。将 Shortcut Models 扩展至双向传输：75% 批次用标准流匹配损失，25% 用噪声↔干净双向 Shortcut 自举损失（Polyak EMA 构造两半步目标），1/8 批次施加往返一致性损失；结合 Guidance-Free Training（$w=7$）使单次前向即可直接生成带强提示引导特征的内部激活。</li>
+<li><strong>训练期反演对齐与阶段 2 动作策略</strong>: 冻结阶段 1 EMA 视频 DiT 后，对每条演示用 <strong>2 步 clean-to-noise</strong> 流图反演得到该未来对应的噪声端点，再做 1 次 noise-to-clean 评估提取中间激活，供 30 层、1B 参数的动作专家条件学习（支持 8 步流匹配或 2 步 Minimal Iterative Policy <code>iWAM (MIP)</code>）。</li>
+<li><strong>推理路径</strong>: 部署时随机采样先验高斯噪声 $z_1 \sim p_{\text{prior}}$，仅执行 <strong>1 次</strong> 视频主干前向评估（对比 IDM 8 步去噪需 9 次视频前向，IDM-flow map 需 2 次前向）即可供动作专家解码。</li>
+</ul>
+<p><strong>3. 实验结果</strong></p>
+<ul>
+<li><strong>DROID 仿真未见环境（Isaac Lab，3 任务 × 2 控制周期 16/24）</strong>: iWAM 平均成功率达 <strong>93.3%</strong>，iWAM (MIP) 达 <strong>91.7%</strong>，紧贴多步 IDM（96.7%）并远超 FastWAM（<strong>9.2%</strong>）、FastWAM-disj（1.7%）、$\pi_{0.5}$（<strong>65.0%</strong>）以及无反演对齐的 1-Step from Prior（&lt;3%）。</li>
+<li><strong>DROID 真机未见环境（Franka Panda，3 任务各 20 次）</strong>: iWAM (MIP) 取得 <strong>85.0%</strong> 平均成功率（三块入碗全完成 75%、杯取笔 95%、叠毛巾 85%），超越完整 IDM（<strong>80.0%</strong>）与 FastWAM（<strong>13.3%</strong>）；在单卡 A100 80GB 上推理延迟较 IDM 降低约 <strong>6 倍</strong>。</li>
+<li><strong>LIBERO-PRO 扰动评测</strong>: iWAM 全面匹配两阶段 IDM（None 99.0% vs 98.5%、Obj 84.4% vs 84.9%、Sem 97.8% vs 98.0%、Task 24.1% vs 23.6%），并持续优于联合/两阶段 FastWAM。</li>
+</ul>
+              </div>
+            </article>
+            
+            <article class="paper-card" id="paper-6">
+              <div class="paper-header">
+                <div class="paper-meta">
+                  <span class="paper-idx">#06</span>
+                  <span class="score-badge">9分</span>
+                  <span class='tag-pill'>WAM</span> <span class='tag-pill'>VLA</span>
+                  <span class="source-pill">来源: html</span>
+                </div>
+                <h2>EffectWAM：学习面向机器人操作的动作锚定视觉效应世界模型</h2>
+                <p class="title-en">EffectWAM: Learning Action-Grounded Effects for Robot Manipulation</p>
+                <p class="aff-line">原文未提及（通讯作者邮箱为 jiapan@iflytek.com、chaoji@iflytek.com） &middot; <code>2611.32053</code></p>
+                <div class="paper-links">
+                  <a class="btn-link" href="https://arxiv.org/abs/2611.32053" target="_blank">arXiv</a>
+                  <a class="btn-link" href="https://arxiv.org/pdf/2611.32053.pdf" target="_blank">PDF</a>
+                  <a class="btn-link" href="https://arxiv.org/html/2611.32053" target="_blank">HTML 原文</a>
+                  <a class='btn-link btn-code' href='https://github.com/haocui1715/xx-wam-mem-0.5-preview' target='_blank'>Code/Project</a><a class='btn-link btn-code' href='https://huggingface.co/haocui/xx-wam-mem-0.5-preview' target='_blank'>Code/Project</a>
+                </div>
+              </div>
+              <div class="tldr-box"><strong>一句话总结：</strong>通过观测端点差异表征 Effect、相机外参编码 CaPE 与末端运动物理锚定监督，训练超 2 万小时数据的 8B/26B 双尺度混合专家 WAM，在无需等待视频解码下实现高精度闭环操作。</div>
+              <div class="paper-body markdown-body">
+                <p><strong>1. 整体逻辑</strong></p>
+<ul>
+<li><strong>痛点与动机</strong>: 常规 WAM 往往绑定高维像素/视频重构，外观细节开销大；而单纯的底层动作标签又缺乏足够的结构化空间监督，且视角移动会混淆相机运动与真实物体交互变化。</li>
+<li><strong>核心洞察</strong>: 将联合世界-动作建模因式分解为 $p_\theta(E, A, Y \mid C) = p_\theta(E, A \mid C)\,p_\theta(Y \mid C, E, A)$：用紧致的、相对当前观测锚点计算的端点差异序列 $E$（Effect）与动作 $A$ 联合生成即可驱动高频控制，而完整未来视频 $Y$ 作为条件可选项按需生成。</li>
+<li><strong>闭环机制</strong>: 混合 Transformer（MoT）耦合语义专家（SEM）与共享生成专家（GEN）。训练期用在线 ViT+端点编码器对齐末端物理变化并由 EMA 分支生成目标 $E^\star$；部署时 4 步 Flow UniPC 联合采样 $(\hat{E}, \hat{A})$ 即刻控制机械臂，若需视觉预测再复用该 $(\hat{E}, \hat{A})$ 触发第二遍视频生成。</li>
+</ul>
+<p><strong>2. 技术拆解</strong></p>
+<ul>
+<li><strong>物理锚定的 Effect 学习与 CaPE</strong>: 对偏移 4、8、12、16 帧的未来图像，经 ViT 与单查询四头观测端点编码器（OBE）映射为有界 $d=256$ 向量 $z_k$，定义相对当前锚点的归一化差异 $e_k = (z_k - z_0)/\sqrt{2}$。当外参可靠时，通过相机位置编码（CaPE）将相对相机变换 $P_k = T_{C_k\leftarrow W}(T_{C_0\leftarrow W})^{-1}$ 块对角右乘到注意力键向量上（无外参轨迹共享同一参数路径做无位姿池化）。</li>
+<li><strong>Action Grounding 与多层监督</strong>: 在线锚定头读取 $e_k$ 与时间间隔 $\Delta t_k$ 回归末端执行器平移、旋转及夹爪开合变化（$\mathcal{L}_g$）；同时引入双光度增强视角一致性与方差/协方差正则（$\mathcal{L}_{\text{obs}}$）、GEN 第 9 层中间对齐损失（$\mathcal{L}_{\text{align}}$）以及 EMA 提供的干净目标流匹配损失。</li>
+<li><strong>8B / 26B MoT 架构与大规模预训练</strong>: Small（8B：VLM 2.2B + Video DiT 5.0B + Action DiT 1.2B）与 Large（26B：8.3B + 16.4B + 2.0B）在超 <strong>20,000 小时</strong> 异构机器人（关节/末端）及人类手部数据上预训练。</li>
+</ul>
+<p><strong>3. 实验结果</strong></p>
+<ul>
+<li><strong>LIBERO 与 LIBERO-Plus</strong>: EffectWAM Small 在标准 LIBERO 达 <strong>99.20%</strong>（Spatial 99.20%、Object 100.00%、Goal 99.20%、Long 98.40%）；在 LIBERO-Plus 10,030 轮七类分布偏移评测中达 <strong>93.10%</strong>（超越 InternW0-$\Delta$ 92.8% 与 SRPO 82.1%），背景与光照扰动分别保持 99.54% 与 96.50%。</li>
+<li><strong>RoboTwin 2.0（仅 Clean 数据微调）</strong>: Small 在 50 任务上取得 <strong>91.82% Clean / 74.22% Randomized / 83.02% Mean</strong>，超越 PICA-WAM（82.7%）、InternW0-$\Delta$（81.0%）、OpenWAM-$\alpha$（69.0%）和 Fast-WAM（39.9%）。</li>
+<li><strong>RoboCasa365 与 RoboDojo</strong>: 在 RoboCasa365（仅用 Human300 训练）整体达 <strong>49.27%</strong>，在未见任务组合 Composite-Unseen 上较 InternW0-$\Delta$ 提升 +2.08 pp（19.38% vs 17.29%）；在 RoboDojo 42 任务上 Small 达 <strong>27.87% SR / 33.53 Score</strong>（优于 Awomo-0.5V 22.9%），Large 达 <strong>34.01% SR / 40.29 Score</strong>（优于 VPP2 32.26% / 39.26 及 PrismWAM 29.30% / 36.23），Memory 维度达 54.22%。</li>
+</ul>
+              </div>
+            </article>
+            
+            <article class="paper-card" id="paper-7">
+              <div class="paper-header">
+                <div class="paper-meta">
+                  <span class="paper-idx">#07</span>
+                  <span class="score-badge">9分</span>
+                  <span class='tag-pill'>WAM</span> <span class='tag-pill'>Robot-RL</span>
+                  <span class="source-pill">来源: html</span>
+                </div>
+                <h2>DexWAC：面向灵巧操作的统一世界-动作-评价联合模型</h2>
+                <p class="title-en">DexWAC: A Unified World-Actor-Critic Model for Dexterous Robot Manipulation</p>
+                <p class="aff-line">University of California, San Diego; École Polytechnique Fédérale de Lausanne (EPFL); Galbot; Peking University; Tsinghua University; Shanghai Qi Zhi Institute &middot; <code>2611.32654</code></p>
+                <div class="paper-links">
+                  <a class="btn-link" href="https://arxiv.org/abs/2611.32654" target="_blank">arXiv</a>
+                  <a class="btn-link" href="https://arxiv.org/pdf/2611.32654.pdf" target="_blank">PDF</a>
+                  <a class="btn-link" href="https://arxiv.org/html/2611.32654" target="_blank">HTML 原文</a>
+                  
+                </div>
+              </div>
+              <div class="tldr-box"><strong>一句话总结：</strong>通过单阶段 Mixture-of-Transformers 联合预训练同步习得 Actor、块端点预测 World Model 与自举 TD Critic，并在真实轨迹微调后于想象空间中通过 PPO 或 BoN 实现灵巧操作策略改进。</div>
+              <div class="paper-body markdown-body">
+                <p><strong>1. 整体逻辑</strong></p>
+<ul>
+<li><strong>痛点与动机</strong>: 现有 WAM 仅把未来预测当作模仿学习的辅助损失，而做策略改进（RL/BoN）时往往需要另外大规模单独训练世界模型与奖励/价值模型，不仅算力翻倍，也无法让动力学预测（control-relevant）与价值评估（task-relevant）共同塑形策略使用的特征。</li>
+<li><strong>核心洞察</strong>: 基于图像编辑骨干构造统一 World-Actor-Critic 模型（DexWAC），只预测每个动作块（chunk）终点时刻的视觉潜变量、本体状态、平滑奖励与延续标志，省去中间视频帧生成；同步引入块级 TD 价值学习约束共享 K/V 前缀，让“世界变化”与“任务进展”在预训练阶段即互相增益。</li>
+<li><strong>闭环机制</strong>: 阶段 1 从演示中联合预训练 Actor、World Model 与 Critic；阶段 2 用演示及策略成功/失败真实 rollout 微调世界模型与 Critic 并学出动作价值 $Q_\phi$；阶段 3 冻结世界模型，在潜空间短程想象 rollout 中用带 BC 正则的 PPO 更新 Actor 或训练 $Q_\omega$ 做 Best-of-$N$ 候选排序。</li>
+</ul>
+<p><strong>2. 技术拆解</strong></p>
+<ul>
+<li><strong>单阶段 MoT 联合预训练</strong>: 生成式世界骨干 $\theta$ 编码语言、当前 VAE 潜变量与本体状态作为共享 K/V 前缀，紧凑 Actor-Critic 专家 $\phi$ 通过注意力读取。Actor 行为克隆、未来视觉潜变量 $z_{t+H}$ 与未来本体状态 $s_{t+H}$ 均用条件流匹配训练；稀疏终局成功信号经 DreamSmooth 式单侧高斯核平滑到前序步，配合正/零样本均衡回归学出奖励头 $\widehat{R}$ 与延续头 $\widehat{c}_t$；同时将锚点与块终点成对送入同一网络做单次前向，用 Huber 损失和 stop-gradient 自举目标学习块级状态价值 $V_\phi(C_t)$（无需 EMA 目标网络）。</li>
+<li><strong>真实轨迹适配与潜空间想象策略改进</strong>: 仅用每任务约 50 条策略执行轨迹与演示联合微调世界模型和 Critic（含新增 $Q$ token 学习 $Q_\phi(C_t, \mathbf{a}_t)$）。改进阶段直接从真实状态根出发在潜空间滚动短程想象轨迹（不解码 RGB）：一条路径采用 Flow-SDE 似然比 + BC 正则的 <strong>PPO</strong> 微调 Actor；另一条路径拟合 $Q_\omega$ 在部署时从 32 个候选中选优（<strong>BoN</strong>）。</li>
+<li><strong>极致推理效率</strong>: 在 RTX 5090 上仅需 <strong>3 步</strong>去噪即可预测 $t+16$ 块端点，世界模型耗时 <strong>0.214 s</strong>（较 FACT 快 <strong>8.5x</strong>、Ctrl-World 快 <strong>20x</strong>、VLA-MBPO 快 <strong>300x</strong>）；Stage 1/PPO 动作块生成延迟仅 <strong>115.9 / 118.0 ms</strong>（$\pi_{0.5}$ 为 352.4 ms）。</li>
+</ul>
+<p><strong>3. 实验结果</strong></p>
+<ul>
+<li><strong>DexJoCo（8 项灵巧操作任务，3 种子）</strong>: Stage 1 预训练即达 <strong>65.50%</strong>（超越 $\pi_{0.5}$ 57.92% 与 FACT 51.08%）；经想象空间 <strong>PPO</strong> 提升至 <strong>67.75%</strong>（超越大规模预训练的 Motus 66.83%），其中双臂任务由 47.78% 升至 <strong>52.89%</strong>；BoN 达 <strong>66.58%</strong>。</li>
+<li><strong>RoboTwin 2.0（50 任务）与世界模型质量</strong>: Stage 1 取得 <strong>88.1% Clean / 88.2% Rand / 88.1% Avg</strong>，在随机化与均分上居首（超越 Motus 87.8%、FACT 87.5%、Gigaworld-Policy 86.0%）；在 DexJoCo $t+16$ 预测中横扫全部 6 项画质指标，腕部视角 LPIPS 较 FACT 降低 <strong>38%</strong>（0.1373 -&gt; <strong>0.0853</strong>）。</li>
+<li><strong>真机实验与消融</strong>: 在两项真机灵巧任务（每任务 300 演示、30 次评测）上，DexWAC 取得 <code>Transfer egg</code> <strong>50%</strong>、 <code>Extract cup</code> <strong>100%</strong>（均分 <strong>75%</strong>），大幅超越 $\pi_{0.5}$（20% 与 70%，均分 45%）。消融表明在 DexJoCo 上去掉 Critic 成功率暴跌至 60.75%（完整 68.00%），在 RoboTwin 2.0 上去掉世界预测则由 88.1% 降至 82.8%。</li>
+</ul>
+              </div>
+            </article>
+            
+            <article class="paper-card" id="paper-8">
+              <div class="paper-header">
+                <div class="paper-meta">
+                  <span class="paper-idx">#08</span>
+                  <span class="score-badge">9分</span>
+                  <span class='tag-pill'>Robot-RL</span> <span class='tag-pill'>VLA</span>
+                  <span class="source-pill">来源: html</span>
+                </div>
+                <h2>ReFocus：面向长程机器人操作强化学习的进度引导自适应专项练习框架</h2>
+                <p class="title-en">ReFocus: Progress-Guided Adaptive Practice for Long-Horizon Robotic Manipulation Reinforcement Learning</p>
+                <p class="aff-line">Zhejiang University, The University of Hong Kong &middot; <code>2611.32639</code></p>
+                <div class="paper-links">
+                  <a class="btn-link" href="https://arxiv.org/abs/2611.32639" target="_blank">arXiv</a>
+                  <a class="btn-link" href="https://arxiv.org/pdf/2611.32639.pdf" target="_blank">PDF</a>
+                  <a class="btn-link" href="https://arxiv.org/html/2611.32639" target="_blank">HTML 原文</a>
+                  <a class='btn-link btn-code' href='https://refocus-robotics.github.io/' target='_blank'>Code/Project</a><a class='btn-link btn-code' href='https://huggingface.co/Qwen/Qwen3.8-27B' target='_blank'>Code/Project</a>
+                </div>
+              </div>
+              <div class="tldr-box"><strong>一句话总结：</strong>将长程任务拆解为子任务 DAG 并分配阶段均衡进度奖励，利用大模型调度器诊断瓶颈阶段后从中间状态恢复切片开展局部强化学习（Local RL），显著攻克长程操作中后段卡顿。</div>
+              <div class="paper-body markdown-body">
+                <p><strong>1. 整体逻辑</strong></p>
+<ul>
+<li><strong>痛点与动机</strong>: 用在线 RL 微调 VLA 时，长程任务（如 1,400–2,900 步的厨房操作）面临两大困境：1）二值终局奖励无法区分已完成前序子任务的失败轨迹；2）反复从初始状态做全流程 rollout 使得前序高成功率阶段耗费大量交互，而真正卡脖子的中后段子任务样本极度匮乏。</li>
+<li><strong>核心洞察</strong>: 引入多轮交替的 <strong>Global RL ↔ Local RL</strong> 闭环：全局轮次用阶段均衡的 DAG 进度奖励提供全轨迹信用分配与瓶颈诊断数据，随后大模型调度器依据历史练习记录选定“进入阶段 → 目标阶段”的自适应练习窗口，在局部轮次中混合重放正常、后缀与前缀状态切片进行饱和专项练习。</li>
+<li><strong>闭环机制</strong>: 基于 $\pi_{0.5}$ SFT 初始化，共执行 3 轮（每轮 25 次 Global PPO + 25 次 Local PPO，基于 Flow-SDE 似然比更新），并在每轮间隙根据验证集完成统计动态调整练习窗口。</li>
+</ul>
+<p><strong>2. 技术拆解</strong></p>
+<ul>
+<li><strong>阶段均衡的 DAG 进度奖励</strong>: 将任务表示为子任务有向无环图（DAG）。不同于按子任务均分奖励导致包含多个重复子任务的 Stage 1 占据 40%–50% 预算的“结构化均匀奖励”，ReFocus 为每个<strong>阶段</strong>分配相等奖励预算（Stage-Balanced Progress Reward），防止前期简单阶段淹没后期瓶颈阶段的 GAE 优势信号。</li>
+<li><strong>LLM 调度器与自适应练习窗口</strong>: 验证集诊断与历史练习缓冲区（History Buffer）交由大模型调度器（默认 GPT-6 Astra，约 $1.28/任务；开源 Qwen3.8-27B 仅 $0.05/任务）选定当前回合的瓶颈窗口。在 Local RL 中按 (Normal 0.5, Suffix 0.25, Prefix 0.25) 概率采样重置策略，借助 MuJoCo 状态接口恢复中间瓶颈前序状态继续交互，并始终更新全量策略网络。</li>
+<li><strong>真机 RECAP 适配改造</strong>: 鉴于真机难以做中间状态物理重置，将进度奖励 $r_t^{\text{prog}}$ 叠加到 RECAP 的逐帧惩罚回报 $r_t^{\text{RECAP}}$ 上训练分布式价值模型（201 离散分桶），并在离线优势指示器微调时对调度器判定的瓶颈片段进行上采样。</li>
+</ul>
+<p><strong>3. 实验结果</strong></p>
+<ul>
+<li><strong>RoboCasa365 Composite-Seen（16 项长程厨房任务，最多 2,900 步）</strong>: ReFocus 达 <strong>51.3%</strong> 平均成功率，领先 StructRL（45.8%）、SimpleVLA-RL（41.9%）、Sparse-RL（41.1%）与 $\pi_{0.5}$ SFT（39.3%）；在最长的 1,400–2,900 步组中由 StructRL 的 39.4% 跃升至 <strong>46.4%</strong>（+7.0 pp）。</li>
+<li><strong>LIBERO-Long（10 任务）</strong>: 取得 <strong>97.8%</strong> 成功率（3 种子平均 97.3 ± 0.6%），超越 StructRL（96.2%）、SimpleVLA-RL（94.0%）与 $\pi_{0.5}$（90.6%），三轮交替优化轨迹呈稳步攀升（90.6% -&gt; 92.4% -&gt; 94.6% -&gt; 97.8%）。</li>
+<li><strong>消融与宇树 G1-D 真机验证</strong>: 单独启用 Progress Reward（96.8%）或 Practice Window（93.4%）均弱于两者结合（97.8%），阶段均衡奖励比均匀子任务奖励高 +2.6 pp（最长组高 +9.0 pp）。在 Unitree G1-D 人形双臂真机（50 条演示 SFT + 50 条自主 rollout）上，<code>StackBowl</code>（<strong>100%</strong> vs RECAP 90% / $\pi_{0.5}$ 80%）、<code>PickFruit</code>（<strong>100%</strong> vs 85% / 75%）、<code>BreadBaker</code>（<strong>95%</strong> vs 70% / 30%）全面领先。</li>
+</ul>
+              </div>
+            </article>
+            
+            <article class="paper-card" id="paper-9">
+              <div class="paper-header">
+                <div class="paper-meta">
+                  <span class="paper-idx">#09</span>
+                  <span class="score-badge">9分</span>
+                  <span class='tag-pill'>Robot-Agent</span> <span class='tag-pill'>VLA</span>
+                  <span class="source-pill">来源: html</span>
+                </div>
+                <h2>VLA 负责执行，代码负责恢复：三维技能包络桥接智能体操作中的组合断层</h2>
+                <p class="title-en">VLAs Execute, Code Recovers: 3D Skill Envelopes Bridge the Compositional Gap in Agentic Manipulation</p>
+                <p class="aff-line">Hong Kong University of Science and Technology (Guangzhou), ShanghaiTech University &middot; <code>2611.32245</code></p>
+                <div class="paper-links">
+                  <a class="btn-link" href="https://arxiv.org/abs/2611.32245" target="_blank">arXiv</a>
+                  <a class="btn-link" href="https://arxiv.org/pdf/2611.32245.pdf" target="_blank">PDF</a>
+                  <a class="btn-link" href="https://arxiv.org/html/2611.32245" target="_blank">HTML 原文</a>
+                  
+                </div>
+              </div>
+              <div class="tldr-box"><strong>一句话总结：</strong>因果干预揭示冻结 VLA 组合接缝失败源于刚性轨迹碰撞场景残留而非视觉变化，据此通过零失败 3D 技能包络为智能体提供 <code>Check</code> 与 <code>Free</code> 几何工具，以分布外代码修复护航分布内 VLA 执行。</div>
+              <div class="paper-body markdown-body">
+                <p><strong>1. 整体逻辑</strong></p>
+<ul>
+<li><strong>痛点与动机</strong>: 在长程任务中由 LLM 规划器串联冻结的原子 VLA 技能时，即便单个技能成功率高达 98.0% 且执行完先复位机械臂（re-homing），接缝处（seam）依然频繁崩溃（LIBERO-Goal 64 个任务对直接串联跌至 14.2%，re-homing 后仍仅 82.8%，如开抽屉后推盘子全败 0/10）。</li>
+<li><strong>核心洞察</strong>: 对完全相同的 640 个交接状态做因果干预发现：把残留物体从相机画面中隐去（View Reset）几乎无效（+1.7 pp，碰撞率仍 17.0%），而物理移除残留物（World Reset）立刻恢复至 92.8%（碰撞降至 2.0%）。可见冻结 VLA 因习惯性轨迹刚性而“盲撞”未见过的前置障碍；但正是这种轨迹高度可重复性，使得技能所需 3D 空间通道可以预先精确测量。</li>
+<li><strong>闭环机制</strong>: 在孤立成功演示中测量每个技能机械臂、夹爪及抓持物扫过的 3D 体素概率场（Skill Envelope）；规划前与执行前先用 <code>Check</code> 检测是否有障碍入侵下游包络，若有则调用经典修复原语配合 <code>Free</code> 查询无遮挡安全放置区，清除后再交由冻结 VLA 在分布内执行。</li>
+</ul>
+<p><strong>2. 技术拆解</strong></p>
+<ul>
+<li><strong>因果接缝归因</strong>: 在相同随机种子与状态快照下解耦 Body（re-homing）、View（隐藏残留物体渲染但保留物理碰撞体）与 World（物理传送恢复原位），证明多步共享工作空间下的接缝失败由<strong>策略特定的物理碰撞</strong>主导。</li>
+<li><strong>零失败 3D 技能包络（$O(n)$ 采样）</strong>: 无需人类演示、失败样本或符号域模型，仅孤立运行冻结技能 $k$ 并保留成功轨迹（37–89 条），通过正运动学将机械臂连杆、夹爪与手持物体包围盒投影到 1 cm 网格计算体素占用概率 $E_k(x) \in [0, 1]$，并记录技能对物体位移的效应（复杂度随技能数线性 $O(n)$ 扩展而非 $O(n^2)$）。</li>
+<li><strong>经典 3D 工具与就绪度校准</strong>:
+  1) <code>Check(k, s)</code>: 计算场景残留元素 $e$ 与 $E_k$ 的峰值重叠 $m_e = \max_{x\in V_e} E_k(x)$，超阈值 $\tau=0.05$ 即告警阻塞物；
+  2) <code>Free(K, s)</code>: 在所有待执行后续技能包络并集的补集中检索最近的带支撑无碰撞放置位姿；
+  3) 用轻量 5 参数乘性风险头将重叠度映射为就绪概率 $p_k(s)$ 用于候选排序。</li>
+</ul>
+<p><strong>3. 实验结果</strong></p>
+<ul>
+<li><strong>预执行碰撞检测与单视角深度</strong>: 在 640 个交接点上无需任何失败数据即达到 <strong>0.946 AUROC</strong>（抽屉类 0.986，自由物体 0.847）；仅凭单目 RGB-D 帧与初始深度差分仍保持 <strong>0.944 AUROC</strong>，并在 140/140 个抽屉状态下与真值状态检测完全一致。</li>
+<li><strong>超越前沿 VLM 语义判断</strong>: 在 429 个交接点上预测下一技能能否就绪，包络就绪模型取得 <strong>0.902 AUROC</strong>，领先基于图像或文本规则提示的 Qwen4-Max、Qwen3.8-27B、GLM-5.3-Flash 至少 <strong>+0.110</strong>（VLM 最高 0.793）。</li>
+<li><strong>两步与三四步长链修复效果</strong>: 提示冻结 $\pi_{0.5}$ 自己关抽屉仅 1/280（0.4%）成功，而代码滑动原语达 138/140（98.6%）。经 <code>Check</code> 门控的主动代码修复使两步接缝总成功率从 82.8% 升至 <strong>92.3%</strong>（中抽屉 38.9% -&gt; <strong>95.6%</strong>、顶抽屉 42.0% -&gt; <strong>94.0%</strong>），逼近上帝视角 World Reset（92.8%）；在 128 条含抽屉的 3–4 步长链上，包络排序+代码修复将整链成功率从 29.7% 暴拉至 <strong>93.8%</strong>（+64.1 pp，双抽屉冲突链从 0/32 升至 28/32）。</li>
+</ul>
+              </div>
+            </article>
+            
+            <article class="paper-card" id="paper-10">
+              <div class="paper-header">
+                <div class="paper-meta">
+                  <span class="paper-idx">#10</span>
+                  <span class="score-badge">9分</span>
+                  <span class='tag-pill'>Robot-Agent</span> <span class='tag-pill'>Robot-RL</span>
+                  <span class="source-pill">来源: html</span>
+                </div>
+                <h2>RoboHarness-RL：面向 VLM 工具调用机器人操作的智能体强化学习</h2>
+                <p class="title-en">RoboHarness-RL: Agentic Reinforcement Learning for VLM-Based Robot Manipulation</p>
+                <p class="aff-line">Zhejiang University (State Key Lab of CAD &amp; CG) &middot; <code>2611.32016</code></p>
+                <div class="paper-links">
+                  <a class="btn-link" href="https://arxiv.org/abs/2611.32016" target="_blank">arXiv</a>
+                  <a class="btn-link" href="https://arxiv.org/pdf/2611.32016.pdf" target="_blank">PDF</a>
+                  <a class="btn-link" href="https://arxiv.org/html/2611.32016" target="_blank">HTML 原文</a>
+                  <a class='btn-link btn-code' href='https://aim-uofa.github.io/RoboHarness-RL/' target='_blank'>Code/Project</a><a class='btn-link btn-code' href='https://robotwin-platform.github.io/leaderboard' target='_blank'>Code/Project</a>
+                </div>
+              </div>
+              <div class="tldr-box"><strong>一句话总结：</strong>构建兼具分层确定性记忆的轻量工具编排框架 LiteHarness，对 9B 开源 VLM 开展两阶段 SFT + 多轮结果奖励 RL 训练，无需 VLA/WAM 即可大幅提高长程纠错与未知扰动泛化能力。</div>
+              <div class="paper-body markdown-body">
+                <p><strong>1. 整体逻辑</strong></p>
+<ul>
+<li><strong>痛点与动机</strong>: 基于工具调用（感知+规划+控制）的具身智能体依赖昂贵的闭源前沿 API 模型，而直接换用开源小尺寸 VLM（如 Qwen3.5-9B）常因上下文爆炸、死循环重复无效调用以及缺乏失败后反思调整策略而表现惨淡（如 ORA 9B 在 RoboTwin 2.0 仅 10.0%）。</li>
+<li><strong>核心洞察</strong>: 多轮智能体强化学习的瓶颈不仅是算法，更是“交互上下文长度随多轮查询急剧膨胀”带来的训练与推理成本爆炸；通过确定性的分层记忆将上下文压半，再用任务终局成败做多轮 RL，可让小模型自主学会少查询、改写错误参数以及从负面反馈中恢复。</li>
+<li><strong>闭环机制</strong>: 冻结感知模型（SAM 3、Contact-GraspNet）与运动规划器（cuRobo），仅用 LoRA 微调关闭思考模式的 Qwen3.5-9B；先用少量成功 GPT-6 Astra 教师轨迹做 SFT 掌握工具语法，再通过 25 轮自适应难度的多轮在线 RL 持续突破教师演示上限。</li>
+</ul>
+<p><strong>2. 技术拆解</strong></p>
+<ul>
+<li><strong>LiteHarness 轻量编排与分层记忆</strong>: 将工具分为只读查询（分割掩码、抓取候选、几何测量）与机器人动作（抓取/末端/夹爪执行，结束本轮）。上下文构造为确定性拼接 $h_t = [S_t; F_t; R_t]$：$S_t$ 浓缩较早历史动作及结果；$F_t$ 专门聚合曾失败或被拒绝的工具调用及关键参数与报错原因，防止重蹈覆辙；$R_t$ 保留最近 $K=3$ 步交互及压缩版较早查询输出，严格限制每次调用最多携带 24 张图像。</li>
+<li><strong>效率收益</strong>: 分层记忆将每轮提示 token 数较“压缩全历史”直接减半（RoboTwin 28.4K vs 53.7K；LIBERO-Pro 24.4K vs 53.1K），使单次 RL 策略更新 GPU 耗时降低 <strong>1.65x</strong>（2.43 vs 4.00 GPU 小时）且全部样本严格落在 45K token 预算内。</li>
+<li><strong>两阶段 SFT + 自适应调度多轮 RL</strong>: 使用 GPT-6 Astra 演示（RoboTwin 393 条、LIBERO-Pro 781 条）做 SFT，随后开展 25 轮（每轮 12 任务状态组 × 8 轨迹）RL，第 12 轮起采用自适应任务调度将 8/12 采样组倾斜给最难的 Goal 和 Long 套件（第 15 轮起较均匀采样最终高出 +3.8 pp）。</li>
+</ul>
+<p><strong>3. 实验结果</strong></p>
+<ul>
+<li><strong>LIBERO-Pro（800 轮 Task &amp; Swap 扰动）</strong>: Qwen3.5-9B 从基础 1.8% -&gt; SFT 57.8% -&gt; RL <strong>73.3%</strong>（+15.5 pp，$p=5\times 10^{-21}$），超越借助 VLA 的同尺寸竞品 AgenticRoboRL-9B（71.0%）、$\pi_{\text{RLinf}}$（50.0%）与 $\pi_{0.5}$（11.0%）；甚至在教师 GPT-6 Astra 21 次全败的任务上 RL 学会在 7/10 测试中成功。</li>
+<li><strong>RoboTwin 2.0（50 任务，仅 Clean 训练）</strong>: Clean 成功率 20.0% -&gt; 31.2% -&gt; <strong>44.0%</strong>；未见扰动 Randomized 场景 15.6% -&gt; 26.4% -&gt; <strong>38.0%</strong>（+11.6 pp），全面超越未微调的更大模型 LiteHarness Qwen3.5-27B（Clean 33.2% / Rand 29.6%）及同类 9B 框架 ORA（10.0% / 6.8%）、K1（3.6% / 2.8%）。</li>
+<li><strong>行为学深层改善</strong>: RL 将无效重复调用率最高压低 <strong>4 倍</strong>（RoboTwin Clean 10.4% -&gt; <strong>2.8%</strong>，Rand 10.9% -&gt; <strong>2.5%</strong>；LIBERO-Pro 9.1% -&gt; 5.7%）；在双方均可解的状态上将每轮 VLM 调用从 23.3 次降至 <strong>15.4 次</strong>（RoboTwin Clean）；在收到执行失败反馈时恢复成功率显著提升（LIBERO-Pro 42.5% -&gt; <strong>57.5%</strong>，$p=2\times 10^{-10}$）。</li>
+</ul>
+              </div>
+            </article>
+            
+    
+        <section class="panel">
+          <h2 class="section-label">速览推荐 · 86 篇</h2>
+          <ul class="quick-list"><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>Robot-RL</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31588' target='_blank'>一阶段足矣：基于直接视觉强化学习的仿真到真机迁移（DRIFT）</a> <code>2611.31588</code></div><div class='quick-en'>One Phase Is Enough: Sim-to-Real Transfer with Direct Visual Reinforcement Learning</div><div class='quick-reason'>Pulkit Agrawal 团队提出冻结预训练视觉基础模型的一阶段直接视觉强化学习配方 DRIFT，无需特权状态教师蒸馏，在三项真机操作任务上相对两阶段蒸馏平均成功率提升 58.8%。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>VLA</span> <span class='tag-pill'>Robot-RL</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32665' target='_blank'>DiffGR00T：面向人形机器人全身视觉-语言-动作模型的可微执行感知训练</a> <code>2611.32665</code></div><div class='quick-en'>DiffGR00T: Execution-Aware Differentiable Training for Humanoid Whole-Body Vision-Language-Action Models</div><div class='quick-reason'>用动作条件世界模型替代不可微仿真器，将 GR00T N1.7 与全身行为基础模型 SONIC 打通端到端可微训练，在 HumanoidArena 四项任务上平均成功率提升 12.5 pp（59.2% -&gt; 71.7%）。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32256' target='_blank'>RoboDemo：调和长程操作中的演示意图与执行进度的双级联测试时训练框架</a> <code>2611.32256</code></div><div class='quick-en'>RoboDemo: Reconciling Demonstration Intent and Execution Progress for Long-Horizon Manipulation</div><div class='quick-reason'>基于 Dual-Cascaded Test-Time-Training 分别维护不变的演示意图快权重记忆与因果压缩的在线交互进度记忆，在 Imitator Game 上达到 90.7% 成功率。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.33158' target='_blank'>OmniAct：单一策略，百万具身形态</a> <code>2611.33158</code></div><div class='quick-en'>OmniAct: One Policy, One Million Embodiments</div><div class='quick-reason'>直接在场景视觉中条件化机器人的运动学图结构（关节位置与运动轴），在程序化生成的 100 万种可行机器人形态上训练流匹配策略，未见形态-场景测试达 63.0%（对比 $\pi_{0.5}$ 17.8%）。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>WAM</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31740' target='_blank'>LeanWAM：从冻结视频模型学习轻量潜空间世界-动作模型</a> <code>2611.31740</code></div><div class='quick-en'>LeanWAM: Learning Latent World Action Models from Frozen Video Models</div><div class='quick-reason'>用 32 个预测 token 压缩时空转换并从冻结视频生成器蒸馏世界先验至 1.4B 轻量策略，A100 推理仅 25.1 ms（快 12.3–41.5x），在 LIBERO/LIBERO-Plus/RoboTwin 2.0 超越 VLA 与 WAM 基线。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32353' target='_blank'>Any2Act：从异构演示扩展机器人上下文学习基础模型</a> <code>2611.32353</code></div><div class='quick-en'>Any2Act: Scaling In-Context Robot Learning from Heterogeneous Demonstrations</div><div class='quick-reason'>在 120 万条真机轨迹（1 万任务）上将上下文演示统一表达在“执行者自身相机布局与动作空间”中，并通过源路由适配器低成本接入人类视频、UMI 与仿真演示。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32108' target='_blank'>Duo：面向双臂策略的时空动作协同设计</a> <code>2611.32108</code></div><div class='quick-en'>Duo: Towards Spatiotemporal Action Coordination in Bimanual Policies</div><div class='quick-reason'>在流匹配动作头中将左右双臂拆分为独立 token 并引入跨臂注意力，在 RoboTwin 2.0 上使 FLOWER（0.89B）和 $\pi_{0.5}$（3.62B）成功率分别提升 +12.55 与 +9.02 pp。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>Robot-Agent</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31894' target='_blank'>RESET：单次演示重建验证世界并实现跨具身自改进技能</a> <code>2611.31894</code></div><div class='quick-en'>RESET: One Demonstration, One Verified World, Self-Improved Skills Across Embodiments</div><div class='quick-reason'>从单条真机演示重建可接触仿真世界与只读终局判据，通过节点失败反馈自演化白盒任务图与技能代码并在零运行时 LLM 下部署，8 项任务未见布局均分达 97%（微调 $\pi_{0.5}$ 为 31%）。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>Robot-RL</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32148' target='_blank'>RetraQ：面向强化学习流策略的流形约束 Critic 引导</a> <code>2611.32148</code></div><div class='quick-en'>RetraQ: Manifold-Constrained Critic Guidance for Flow Policies in RL</div><div class='quick-reason'>利用冻结流策略单次速度评估的雅可比切空间滤波与流形拉回约束 Critic 动作梯度防止外推失真，在 LIBERO、OGBench 离线到在线 RL 及真机插拔头任务上取得显著提升。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>WAM</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32722' target='_blank'>AG-WAM：面向高精度高效率操作的显式注意力引导世界-动作模型</a> <code>2611.32722</code></div><div class='quick-en'>AG-WAM: Attention-Guided World Action Model for Accurate and Efficient Robot Manipulation</div><div class='quick-reason'>提出内容自适应预测注意力、引导点视觉注意力与状态条件文本注意力三个即插即用模块重塑 WAM 内部注意力范式，无需私有具身数据即在 LIBERO-X/Plus 和 RoboTwin 2.0 刷新 SOTA。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>WAM</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31901' target='_blank'>PreWAM：探索世界-动作建模中潜空间未来预测的设计空间</a> <code>2611.31901</code></div><div class='quick-en'>PreWAM: Exploring the Design of Latent Future Prediction for World-Action Modeling</div><div class='quick-reason'>系统对比预测表征空间后在预训练 DINO 特征空间设计残差世界预测与跨时间尺度查询，显著增强视觉扰动下的运动可恢复性与真机操作泛化。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>WAM</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32241' target='_blank'>运动思维链（PILOT）：解耦运动语义与视觉外观的机器人操作表征推导</a> <code>2611.32241</code></div><div class='quick-en'>Motion Chain of Thought: Disentangling Motion Semantics from Visual Appearance for Robotic Manipulation</div><div class='quick-reason'>针对 WAM 视觉与动作表征纠缠瓶颈，提出 Representational Deduction 让动作分支显式建模潜在状态转移 token 作为推理空间内的运动思维链（CoT）。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>Robot-Agent</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32238' target='_blank'>面向智能体编排机器人操作的边界感知策略学习</a> <code>2611.32238</code></div><div class='quick-en'>Boundary-Aware Policy Learning for Agent-Orchestrated Robot Manipulation</div><div class='quick-reason'>通过边界显式微调与成功 rollout 自改进逐步扩大底层视觉运动策略的可接管起始位姿边界，在随机化 RoboTwin 2.0 达 98.4% 成功率，同时降低 41.3% API 成本与 37.5% 执行耗时。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31715' target='_blank'>机器人基础模型权重空间编程初探</a> <code>2611.31715</code></div><div class='quick-en'>Sparks of Weight-Space Programming for Robot Foundation Models</div><div class='quick-reason'>让语言模型 Agent 直接读写 $\pi_{0.5}$ 动作专家中约 0.0002% 的近静默神经元参数，在不采集新数据或不重训的情况下针对固定卡死状态触发纠偏动作。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32081' target='_blank'>KeyMemVLA：面向长程操作的子任务引导关键记忆 VLA 框架</a> <code>2611.32081</code></div><div class='quick-en'>KeyMemVLA: Subtask-Guided Key Memory for Long-Horizon Robotic Manipulation</div><div class='quick-reason'>在有限记忆预算下联合学习当前子任务进度、动作与关键帧写入位置预测，在 RMBench-$M(n)$、RoboTwin-MeM、自建 KMBench 及真机任务上超越基线。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>Robot-RL</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31850' target='_blank'>面向流匹配具身基础模型的两阶段后训练框架</a> <code>2611.31850</code></div><div class='quick-en'>Two-Stage Post-Training for Flow-Based Embodied Foundation Models</div><div class='quick-reason'>阶段 1 用多教师在线同策略蒸馏（MOPD）整合专家能力，阶段 2 结合 RL 与仅针对失败轨迹的噪声加权速度蒸馏，在多基准上超越所有单教师与直接 RL。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32564' target='_blank'>MXI-MemICL：基于自检索交互记忆的上下文机器人操作</a> <code>2611.32564</code></div><div class='quick-en'>MXI-MemICL: Towards In-Context Robot Manipulation through Self-Retrieved Interaction Memory</div><div class='quick-reason'>用视觉-动作因果编码器将单次演示与历史交互存入可检索记忆，由意图预测器检索并以门控交叉注意力注入 VLA，在 RoboCasa365 和 RoboTwin 2.0 分别提升 +8.2% 与 +14.4%。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>Robot-Agent</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32533' target='_blank'>Next-Manip：面向机器人操作的按需智能体-策略协同框架</a> <code>2611.32533</code></div><div class='quick-en'>Next-Manip: On-Demand Agent-Policy Collaboration for Robotic Manipulation</div><div class='quick-reason'>引入轻量级智能体调用控制器（AIC）与紧凑任务动力学上下文（TDC），按当前执行需求动态在高效策略与高成本多模态 Agent 间分配控制权。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>VLA</span> <span class='tag-pill'>Robot-Agent</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31452' target='_blank'>定位、引导、执行：利用多模态基础模型提升 VLA 空间泛化能力（MFM-VLA）</a> <code>2611.31452</code></div><div class='quick-en'>Ground, Guide, Act: Improving VLA Spatial Generalization with Multimodal Foundation Models</div><div class='quick-reason'>通过原子阶段干预证实 VLA 失败源于目标定位与全局路由，据此用多模态大模型做空间引导、控制器跑自由空间、几何字幕微调后的 VLA 负责精细操作，ALOHA-Sim-PRO 提升 +74.0 pp。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31954' target='_blank'>恰当尺度下的感知即足够：VLA 尺度自适应 Token 剪枝（TauPrune-VLA）</a> <code>2611.31954</code></div><div class='quick-en'>Perception Is Enough, at the Right Scale: Scale-Adaptive Token Pruning for Vision-Language-Action Models</div><div class='quick-reason'>免训练在线依据感知语义趋势与机器人动作幅度调节感知温度 $\tau$，并利用相邻帧连续性异步复用保留索引，实现最高 1.86 倍推理加速且几乎不掉点。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31903' target='_blank'>超越专家回放：面向持续学习 VLA 的跨指令锚定（XIA）</a> <code>2611.31903</code></div><div class='quick-en'>Beyond Expert Replay: Cross-Instruction Anchoring for Continual Vision-Language-Action Learning</div><div class='quick-reason'>针对有限经验回放导致旧指令误触发新任务目标的问题，在任务边界冻结旧教师模型并在当前观测下匹配旧指令响应，在 LIBERO、RoboCasa 与真机上显著降低遗忘。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31511' target='_blank'>近零遗忘还不够：预训练 VLA 持续学习中的分布外鲁棒性危机</a> <code>2611.31511</code></div><div class='quick-en'>Near-Zero Forgetting Is Not Enough: Out-of-Distribution Robustness in Continual Learning of Pretrained VLAs</div><div class='quick-reason'>实证揭示 $\pi_0$ 在经验回放持续学习下尽管域内遗忘近零，域外（LIBERO-Plus）性能却迅速崩塌，且表征探测发现信息仍在但多模态-动作表征发生错位漂移。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32260' target='_blank'>EgoLoAF：基于手物可供性的无穿戴第一视角演示人形移动操作学习</a> <code>2611.32260</code></div><div class='quick-en'>EgoLoAF: Learning Humanoid Loco-Manipulation from Egocentric Demonstrations with Hand-Object Affordances</div><div class='quick-reason'>无需穿戴动捕或混合真机遥操作，直接从第一视角视频重建躯干与双手轨迹并通过交叉注意力注入显式手物可供性微调 VLA，并开源 12.84 万条（1,000 小时）第一视角数据。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>WAM</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32098' target='_blank'>ActiveBridge：通过第一视角感知-交互建模将人类主动视觉先验迁移至机器人</a> <code>2611.32098</code></div><div class='quick-en'>ActiveBridge: Scaling Active Prior for Robots through Egocentric Perception-Interaction Modeling</div><div class='quick-reason'>针对单头戴相机机器人通过世界-动作建模联合预测未来第一视角视频与同步头-腕动作轨迹，使机器人学会像人类一样主动转动头部获取所需视觉信息。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>VLA</span> <span class='tag-pill'>Robot-RL</span> <a class='quick-title' href='https://arxiv.org/abs/2611.33130' target='_blank'>机器人策略的探索式中期训练（$\beta$-Data）</a> <code>2611.33130</code></div><div class='quick-en'>Exploratory Midtraining for Robot Policies</div><div class='quick-reason'>通过“人类对抗干扰 + 操作员不重置继续完成”采集 $\beta$-Data 并按局部结果重标注语言标签做中期训练，显著提升仿真与三台真机的零样本泛化及后续在线 RL 样本效率。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>WAM</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31782' target='_blank'>多感一界：面向双臂灵巧操作的分层多模态世界表征学习（HiMoDex）</a> <code>2611.31782</code></div><div class='quick-en'>Many Senses, One World: Learning Hierarchical Multimodal World Representations for Bimanual Dexterous Manipulation</div><div class='quick-reason'>在 119 万步同步视-触-力矩-音频数据集上预训练分层多模态世界状态编码器并条件化共享世界-动作 Transformer，5 项真机双臂灵巧任务均分达 78.7%（+32.0%）。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>WAM</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32786' target='_blank'>仿真器代理世界模型：检验视频世界模型是否真正遵循物理代理（SimPWM）</a> <code>2611.32786</code></div><div class='quick-en'>Simulator-as-Proxy World Model for Robot Manipulation</div><div class='quick-reason'>由单帧重建机械臂 3D 模型与物体点云作为显式规则仿真代理驱动视频渲染，在 DROID 未见场景揭示机械臂紧跟代理（IoU 0.75–0.78）而物体抬起仍取决于视频模型是否经物理一致性微调。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>WAM</span> <span class='tag-pill'>Robot-RL</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32944' target='_blank'>DynaMimic：面向人形全身运动跟踪的物理信息可微世界模型</a> <code>2611.32944</code></div><div class='quick-en'>DynaMimic: A Physics-Informed World Model for Humanoid Motion Tracking</div><div class='quick-reason'>网络预测候选支撑连杆接触力旋量与残差广义力后代入闭式拉格朗日正动力学推导下一状态，在 60 段 LAFAN1 动作与 A3 跑酷地形上较 SuperMimic 分别降低 MPJPE 18.6% 与 14.9%。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>Robot-RL</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32645' target='_blank'>TeamFlowRL：面向多智能体协同的去中心化流策略在线强化学习优化</a> <code>2611.32645</code></div><div class='quick-en'>TeamFlowRL: Online Policy Optimization of Decentralized Flow Policies for Multi-Agent Coordination</div><div class='quick-reason'>绕开流策略动作似然难算瓶颈，在完整去噪轨迹上构建共享团队优势加权与独立裁剪的策略优化目标，在 6 项双臂任务探索噪声下超越高斯微调 +33.1%。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>Robot-Agent</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32813' target='_blank'>Atomic Policy：以智能体推理与 PDDL 组合原子操作技能</a> <code>2611.32813</code></div><div class='quick-en'>Atomic Policy: Composing Atomic Manipulation Skills with Agentic Reasoning</div><div class='quick-reason'>VLM 估计符号状态与目标并交由 PDDL 求解器生成技能计划，由 Agent Harness 通过语言或视觉点选引导并校验底层专精或通用原子策略执行与重规划。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>Robot-Agent</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32093' target='_blank'>MARGIN：基于近失余量的风险感知机器人程序自改进智能体</a> <code>2611.32093</code></div><div class='quick-en'>MARGIN: A Risk-Aware Agent for Robot Program Refinement</div><div class='quick-reason'>针对成功率饱和但测试易碎的问题，以最慢成功轨迹的剩余步数比例（近失余量）预测未见种子失败风险（AUC 0.774）并结合安全竞速规则削减 53.5% 候选评估轮次。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>Robot-Agent</span> <span class='tag-pill'>Robot-RL</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32186' target='_blank'>SkillHarness：面向长程复杂地形通行的执行感知即插即用技能协调框架</a> <code>2611.32186</code></div><div class='quick-en'>SkillHarness: Execution-Aware Coordination with Plug-and-Play Skills for Long-Horizon Traversal</div><div class='quick-reason'>结合感知强化学习运动技能库与视觉-语言 Harness，通过事件触发推理、几何可行性验证与回溯决策修正实现无需重训策略的跨地形组合通行。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>Robot-Agent</span> <a class='quick-title' href='https://arxiv.org/abs/2611.33144' target='_blank'>PyRUA-Dex：借助代码智能体无需演示学习双臂灵巧程序化策略</a> <code>2611.33144</code></div><div class='quick-en'>PyRUA-Dex: Learning Programmatic Policies for Dexterous Bimanual Manipulation with Coding Agents</div><div class='quick-reason'>通过并行探索智能体、蒸馏智能体与随机化精炼两阶段生成程序化灵巧策略，在 Bench2Dex（72.9）与 DexJoCo（81.0%）刷新 SOTA 并在双 22-DoF 灵巧手真机实现 30 分钟学会弹钢琴与书法。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31868' target='_blank'>CALVIN-MAX：执行中途的环境变化何时会伤害机器人策略？</a> <code>2611.31868</code></div><div class='quick-en'>CALVIN-MAX: When Does a Mid-Execution Change Hurt a Robot Policy?</div><div class='quick-reason'>构建 7,828 个三联对照用例拆解“世界改变代价”与“运动中途变化时机效应”，评估 10 个开源策略发现均损失 4.4–9.9 pp，且仅视角变化在运动中途代价比起始变化低 5.4 pp。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32233' target='_blank'>RoboClock：面向时间感知机器人智能的统一基准</a> <code>2611.32233</code></div><div class='quick-en'>Roboclock: A Unified Benchmark for Time-Aware Robotic Intelligence</div><div class='quick-reason'>提出包含时间窗、事件响应与吞吐量三类约束的 60 项任务及推理延迟同步推进的 Latency-Aligned 评测协议，评测 30 余方法发现最佳 VLA 在 Easy 级时间成功率仅 8.3%。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>Robot-Agent</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32649' target='_blank'>ICLWorld：跨数字与物理世界的智能体在线上下文学习基准</a> <code>2611.32649</code></div><div class='quick-en'>ICLWorld: Benchmarking In-Context Learning of Agents from Digital to Physical Worlds</div><div class='quick-reason'>构建 30 环境 160 项反直觉规则任务与统一 UIverse Harness 评测在线视频/文本 ICL，发现 Claude Opus 5.5 在电脑使用达 82% 成功率但在机器人操作仅 27%。</div></li><li><div class='quick-head'><span class='score-badge'>8分</span> <span class='tag-pill'>Robot-RL</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32101' target='_blank'>Ego2Real：基于第一视角视触觉演示的双臂灵巧操作迁移</a> <code>2611.32101</code></div><div class='quick-en'>Ego2Real: Learning Bimanual Dexterous Manipulation from Egocentric Visuo-Tactile Demonstrations</div><div class='quick-reason'>融合第一视角视频与触觉手套信号，在触觉引导手物交互重建与接触信息强化学习奖励两个阶段对齐人类接触意图并迁移到异构灵巧手。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>Robot-Agent</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31341' target='_blank'>EvoMisty：社交机器人能力的自主构建、优化与演化插件框架</a> <code>2611.31341</code></div><div class='quick-en'>EvoMisty: Building, Optimizing, and Evolving Capabilities on a Social Robot</div><div class='quick-reason'>让 Claude Code/Codex 从官方文档自动构建并在真机 Misty II 上验证超百项原子能力，基于执行指标迭代优化任务程序并将对话延迟降低 52%–71%。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>Robot-RL</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31446' target='_blank'>通过时序偏好从人类纠偏交互中学习潜层奖励</a> <code>2611.31446</code></div><div class='quick-en'>Learning from Human Corrections through Temporal Preferences</div><div class='quick-reason'>将人类干预前（何时介入）与干预后（如何修正）的行为均转化为偏好对用于价值函数学习，在目标推理与纠偏预测上泛化至未见被试。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>VLA</span> <span class='tag-pill'>Robot-Agent</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31488' target='_blank'>具身神经符号 AI：让机器人行为可审计、安全且可扩展</a> <code>2611.31488</code></div><div class='quick-en'>Embodied Neuro-symbolic AI: Making Robot Behavior Auditable, Safe, and Scalable</div><div class='quick-reason'>提出将端到端 VLA 感知控制与显式机器可读领域知识及形式化安全约束结合的具身神经符号范式，以保障分布偏移与安全关键场景下的合规可审计性。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>VLA</span> <span class='tag-pill'>WAM</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31577' target='_blank'>FabricBench：基于接触驱动柔性仿真器的双臂布料操作标准化基准</a> <code>2611.31577</code></div><div class='quick-en'>FabricBench: A Standardized Policy Benchmark for Bimanual Fabric Manipulation with a Contact-Driven Deformable Simulator</div><div class='quick-reason'>基于 Newton 改进布料-刚体双向力耦合接触仿真并构建 6 类 1 万资产基准，评估 6 款 VLA/WAM 发现长程叠 T 恤最高仅 36%，且真机零样本 $\pi_{0.5}$ 保持了与仿真一致的难度分布。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>Robot-Agent</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31694' target='_blank'>CATWAY：基于校准语言模型置信度的代价敏感三向机器人决策门控</a> <code>2611.31694</code></div><div class='quick-en'>CATWAY: Cost-sensitive agentic three-way robot decisions with calibrated language-model confidence</div><div class='quick-reason'>基于指令清晰/模糊/不可行/不安全四态损失矩阵划分“执行/提问/拒绝”决策域并融合多样本投票逻辑回归，在跨域与 TRUST-NAV 基准实现 142 条不安全指令零误执行。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>Robot-RL</span> <span class='tag-pill'>WAM</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31843' target='_blank'>Co-DRIS：耦合不确定性下反应式接球的物理预测信念与变阻抗学习</a> <code>2611.31843</code></div><div class='quick-en'>Co-DRIS: Physics-Informed Predictive Belief and Variable-Impedance Learning for Reactive Catching under Coupled Uncertainty</div><div class='quick-reason'>结合弹道物理世界模型、动作条件因果 GRU 信念编码与 Franka 变阻抗软接球控制，在 10 项感知丢包与执行耦合压力测试下较 DRIS 提升 +39.0%。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>Robot-RL</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31863' target='_blank'>Ada-BFM：面向人形机器人场景交互的行为基础模型轻量适配</a> <code>2611.31863</code></div><div class='quick-en'>Ada-BFM: Adapting Behavior Foundation Models for Humanoid Scene Interaction</div><div class='quick-reason'>在预训练全身行为基础模型（BFM）上增设轻量级交互适配器实现多地形与物体接触统一适配，在仿真与真机上加速学习并保留原有全身平衡能力。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>Robot-Agent</span> <span class='tag-pill'>Robot-RL</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31925' target='_blank'>学会何时向人类求助：人机协同中的自适应干预请求离线强化学习</a> <code>2611.31925</code></div><div class='quick-en'>Learning When a Robot Should Ask For Help: Adaptive Intervention Requests in Human-Robot Teaming</div><div class='quick-reason'>基于历史干预有用性与自主进展利用离线 RL 学习自适应求助策略，在实体用户研究中降低不必要告警并显著提升新手操作员协同效率。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32162' target='_blank'>读取几何锚点：纯 RGB 部署下的模仿学习视角泛化（ReGeoAnch）</a> <code>2611.32162</code></div><div class='quick-en'>Reading Geometric Anchors: Viewpoint Generalization in Imitation Learning for Robotic Manipulation with RGB-Only Deployment</div><div class='quick-reason'>以机械臂基座与夹爪坐标系构建共享物理锚点并用视觉不变机器人状态引导几何读出，结合跨视角一致性在 MetaWorld 和 ManiSkill3 12 项任务提升视角泛化。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>Robot-Agent</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32185' target='_blank'>OVOK：面向单目视频铰接机器人状态估计的递归自改进智能体框架</a> <code>2611.32185</code></div><div class='quick-en'>OVOK: A Recursive Self-Improving Agentic Framework for Video-Based Articulated Robot State Estimation</div><div class='quick-reason'>构建提出者-执行者-验证者闭环进化工具与可执行工作流并冻结用于推理，在 DREAM-V 和 RoboKeyGen-V 视频关节角与内参/外参估计上刷新 SOTA。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>WAM</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32228' target='_blank'>解耦视觉动力学用于世界模型规划（FactorWorld）</a> <code>2611.32228</code></div><div class='quick-en'>Disentangling Visual Dynamics for World Model Planning</div><div class='quick-reason'>提出双向反事实残差因子分解器（CCRF）分离智能体动作动力学与外部干扰并结合语义路由评分轨迹，在 Push-T 等连续控制达 91.67%–100% 成功率。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>Robot-Agent</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32381' target='_blank'>提供研究论文上下文能否改进 LLM 生成的四足导航代码？探索性仿真研究</a> <code>2611.32381</code></div><div class='quick-en'>Does Research-Paper Context Improve LLM-Generated Quadruped Navigation? An Exploratory Simulation Study</div><div class='quick-reason'>控制变量实验发现给 Claude Opus 5 传入增量重规划论文后，Isaac Sim 物理环境下 Go2 迷宫导航通过率反从 7/8 降至 2/8，揭示 LLM 易过度拟合论文局部目标。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>VLA</span> <span class='tag-pill'>Robot-RL</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32476' target='_blank'>ViTacLab：物理一致的视触觉仿真、基准与策略学习框架</a> <code>2611.32476</code></div><div class='quick-en'>ViTacLab: Physically Consistent Visuo-Tactile Simulation, Benchmarking, and Representation Learning for Robotic Manipulation</div><div class='quick-reason'>锚定 PhysX 接触求解器修正法/切向力与摩擦锥并达 2,482.9 FPS 并行吞吐，配套跨夹爪/灵巧手/双臂基准与双流 VQ-VAE 策略显著降低力估计误差。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>WAM</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32483' target='_blank'>CodeWAM：结合可执行代码的端到端自动驾驶世界-动作模型</a> <code>2611.32483</code></div><div class='quick-en'>CodeWAM: A Code World Action Model for End-to-End Autonomous Driving</div><div class='quick-reason'>用可执行代码显式模拟自车运动学演化并与学习的视觉场景预测互补，在 NAVSIM v1/v2 与 NAVHARD 分别达到 93.6 PDMS、92.1 EPDMS 与 50.6 EPDMS。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>Robot-Agent</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32493' target='_blank'>CoFiNav：VLM 引导的开放语义无人机末端配送粗到细导航</a> <code>2611.32493</code></div><div class='quick-en'>CoFiNav: VLM-Guided Coarse-to-Fine Semantic Navigation for Open-Ended Last-Mile UAV Delivery</div><div class='quick-reason'>结合 OpenStreetMap 粗先验地图与 VLM 主动语义核验需求，通过 RGB-LiDAR 几何视点选择逐步锚定开放词表关系描述的配送终点。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>Robot-Agent</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32534' target='_blank'>EmbodiedStudio：面向具身学习与评测的任务驱动闭环仿真生成平台</a> <code>2611.32534</code></div><div class='quick-en'>EmbodiedStudio: A Task-Driven Simulation Generation Platform for Embodied Learning and Evaluation</div><div class='quick-reason'>让代码智能体在仿真反馈与独立审查下联合编写场景、任务、机器人行为与忠实评分脚本，同步沉淀环境构建与策略学习双重经验。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>Robot-Agent</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32622' target='_blank'>RoboRecast：基于诊断驱动优化的意图保持演示数据增强</a> <code>2611.32622</code></div><div class='quick-en'>RoboRecast: Intent-Preserving Demonstration Augmentation via Diagnosis-Driven Optimization</div><div class='quick-reason'>智能体在物理仿真中根据失败反馈联合修改场景与机器人动作参数以保持源交互意图，支持将人类与跨具身演示迁移到新布局及真机策略学习。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>Robot-RL</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32642' target='_blank'>BARE：面向人形机器人的身体感知反射式避障强化学习</a> <code>2611.32642</code></div><div class='quick-en'>BARE: Body-Aware Reflexive Evasion for Humanoid Robots</div><div class='quick-reason'>依据受威胁部位与碰撞紧迫度从重定向人类闪避库适配局部参考相位，通过强化学习在保持全身双足平衡下实现快速局部闪避。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>Robot-Agent</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32683' target='_blank'>DeCoNav-Act：多机器人移动操作集体物理能力基准</a> <code>2611.32683</code></div><div class='quick-en'>DeCoNav-Act: Benchmarking Collective Physical Capability in Multi-Robot Mobile Manipulation</div><div class='quick-reason'>构建 500 项同/异构多机协同移动操作任务检验物理交接状态可用性，发现前沿模型驱动的 CoMoMa 在物理依赖交接上成功率仅 4.1%。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32788' target='_blank'>关键位姿还是稠密动作？阶段结构化操作动作表征的受控对比</a> <code>2611.32788</code></div><div class='quick-en'>Keypose or Dense? A Controlled Comparison of Action Representations for Stage-Structured Manipulation</div><div class='quick-reason'>在等动作块长与算力预算下对比关键位姿与稠密动作表征，揭示关键位姿在轨迹扰动与物体尺寸变化下更稳健但高度依赖底层伺服执行器匹配。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32797' target='_blank'>供给几何、学习执行：面向零样本跨具身迁移的螺旋注意力策略</a> <code>2611.32797</code></div><div class='quick-en'>Supply Geometry, Learn Execution: Screw Attention for Zero-Shot Policy Transfer in Robot Manipulation</div><div class='quick-reason'>仅用 3 万可学习参数作用于显式物体位姿、相对 SE(3) 与关节螺旋轴，单臂仿真训练即可零样本迁移至 5 款未见机械臂（80.2%）与真机（21/24）。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>Robot-Agent</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32803' target='_blank'>MRBench：异构多机器人操作中的物理必要性推理基准</a> <code>2611.32803</code></div><div class='quick-en'>MRBench: Benchmarking Physical Necessity Reasoning in Heterogeneous Multi-Robot Manipulation</div><div class='quick-reason'>评估多机协调智能体在成员能力变化或被动支撑替代下的最小可行团队筛选能力，所提 MRScissors 将团队选择准确率提升 9.5–10.4 个百分点至 91.2%。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32858' target='_blank'>技能词表代价几何？基于演示动作的闭环分解（MPQ）</a> <code>2611.32858</code></div><div class='quick-en'>What Does a Skill Vocabulary Cost? A Closed-Loop Decomposition over Demonstrated Motions</div><div class='quick-reason'>将动作原型量化（MPQ）后置于包括 7B VLA 在内的训练策略之后零参数解耦词表量化、技能选择与局部修正误差，指出传统离线重构指标严重误判词表优劣。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>Robot-Agent</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32986' target='_blank'>CAPER：基于零件锚定与库存精炼的说明书引导机器人装配规划</a> <code>2611.32986</code></div><div class='quick-en'>CAPER: PartGround and PlanRefine for Reliable Manual-Guided Robotic Assembly Planning</div><div class='quick-reason'>将说明书视觉步骤与真实零件库存表在共享装配中间表示中对齐校验，在 IKEA 野外装配数据集实现 83.33% 有限库存一致性且完全消除超额用件错误。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>Robot-RL</span> <a class='quick-title' href='https://arxiv.org/abs/2611.33040' target='_blank'>极限操控：生成式流策略在线强化学习控制自动驾驶漂移</a> <code>2611.33040</code></div><div class='quick-en'>At the Limit: Autonomous Vehicle Drifting under Generative Policies</div><div class='quick-reason'>结合 SDE 探索采样与价值引导策略优化对流策略做从零训练或预训练微调，在 F1TENTH 数字孪生实现高精度极限漂移。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>Robot-Agent</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.33054' target='_blank'>EmbodiSafety：具身智能体风险理解与安全响应基准</a> <code>2611.33054</code></div><div class='quick-en'>EmbodiSafety: Benchmarking Risk Understanding and Response in Embodied AI</div><div class='quick-reason'>覆盖 844 视觉场景与六类响应模式（含自主恢复与升级求助），Claude-Opus-5.5 轨迹完整决策准确率仅 61.5%，并构建 4 万安全对齐数据集提升 Qwen3.5-2B/4B。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31952' target='_blank'>VLG-Drive：融合冻结视觉-语言与几何基础模型先验的自动驾驶规划</a> <code>2611.31952</code></div><div class='quick-en'>VLG-Drive: Unifying Vision-Language and Geometric Priors for Autonomous Driving</div><div class='quick-reason'>保持 VLM 与几何基础模型双双冻结，仅通过几何锚定残差融合接口与轻量规划器即在纯相机输入下取得 NavHard 31.78 EPDMS 与 NavTest 88.27 PDMS。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>WAM</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32152' target='_blank'>RoboProbe：机器人世界模型物理合理性智能体评测基准</a> <code>2611.32152</code></div><div class='quick-en'>RoboProbe: Benchmarking Physical Plausibility of Robot World Models</div><div class='quick-reason'>结合跟踪、分割与 3D 几何构建接触保真度等五项物理规律指标并由智能体调度细化，在 761 段人工标注生成视频上全部指标 AUROC 超过 0.85。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32705' target='_blank'>偏离航线：追踪具身跟踪 VLA 中非指令自运动从感知到动作的失效机理</a> <code>2611.32705</code></div><div class='quick-en'>Knocked Off Course: Tracing Uncommanded Motion from Perception to Action in Embodied VLAs</div><div class='quick-reason'>诊断 Uni-NaVid 等跟踪 VLA 对突发目标丢失高度敏感的两大表征/解码断层，仅用 1.7% 数据针对性微调即可在平滑丢失后将成功率相对提升 72%。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>VLA</span> <span class='tag-pill'>WAM</span> <a class='quick-title' href='https://arxiv.org/abs/2611.33010' target='_blank'>具身 AI 未通过镜面测试：一面镜子如何击溃机器人操作策略</a> <code>2611.33010</code></div><div class='quick-en'>Embodied AI Fails the Mirror Test: How a Simple Mirror Breaks Robot Policies</div><div class='quick-reason'>在 RoboDojo-Mirror 基准测试五款 VLA/WAM/Agent 策略发现镜面反射导致成功率暴跌 10.8–56.7 pp，且多为无碰撞的“幻影目标”错误追踪。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32510' target='_blank'>GeoVLDrive：面向自动驾驶的几何锚定视觉-语言推理 VLA 框架</a> <code>2611.32510</code></div><div class='quick-en'>GeoVLDrive: Geometry-Grounded Vision-Language Reasoning for Autonomous Driving</div><div class='quick-reason'>以门控交叉注意力注入 3D 基础模型特征并用结构化潜空间 CoT 组织未来几何与元动作，在 NAVSIM v1/v2 分别取得 91.8 PDMS 与 90.9 EPDMS。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>WAM</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32900' target='_blank'>面向具身视觉跟踪的运动条件世界建模</a> <code>2611.32900</code></div><div class='quick-en'>Motion Conditioned World Modeling for Embodied Visual Tracking</div><div class='quick-reason'>在 0.5B 轻量主干中联合预测目标多模态路径与进度分布并经自车坐标变换条件化未来视觉特征重构，在三大具身跟踪基准提升跨环境泛化。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>WAM</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31689' target='_blank'>GeoMVGen：面向机器人操作的多视角外观-几何联合视频生成</a> <code>2611.31689</code></div><div class='quick-en'>GeoMVGen: Joint Appearance-Geometry Modeling for Multi-View Video Generation in Robotic Manipulation</div><div class='quick-reason'>在视频扩散 Transformer 中通过模态适配器、跨模态残差与跨视角重投影一致性联合生成动作控制下的多视角 RGB 与点图视频。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>WAM</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31803' target='_blank'>SceneMemBench：交互式视频世界模型场景记忆基准</a> <code>2611.31803</code></div><div class='quick-en'>SceneMemBench: A Benchmark for Scene Memory in Interactive Video World Models</div><div class='quick-reason'>通过 600 条 Unreal 轨迹解耦“已见视角回想”与“新视角恢复”，揭示现有开闭源视频世界模型在跨视角重建上的系统性退化。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>WAM</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32017' target='_blank'>面向潜动作建模的智能体状态表征学习（Agent-State LAM）</a> <code>2611.32017</code></div><div class='quick-en'>Learning Agent States for Latent Action Modeling</div><div class='quick-reason'>提出空间匹配时间判别（SMTD）过滤背景与静态外观干扰，使无标注视频学出的潜动作专注于智能体真实物理状态转移。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>WAM</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32226' target='_blank'>先关系后动作：面向潜动作预训练的显式关系建模（RELACT）</a> <code>2611.32226</code></div><div class='quick-en'>Relation Before Action: Explicit Relation Modeling for Latent Action Pretraining</div><div class='quick-reason'>将视觉转移结构化关系建模 $R$ 与随机潜动作抽象 $U$ 显式解耦并用潜动力学监督，在目标导航与操作策略迁移上持续提效。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>WAM</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32473' target='_blank'>OmniPersist：基于全景-透视耦合演化的持久动态世界建模</a> <code>2611.32473</code></div><div class='quick-en'>OmniPersist: Persistent Dynamic World Modeling via Coupled Panoramic Evolution</div><div class='quick-reason'>在单阶段扩散模型中耦合低帧率全景流与透视流演化，解决相机转开再转回时视野外动态物体消失或突变的问题。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>WAM</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32745' target='_blank'>MemAnchorWorld：面向自动驾驶的时域条件稀疏记忆锚点世界模型</a> <code>2611.32745</code></div><div class='quick-en'>MemAnchorWorld: A Sparse World Model with Horizon-Conditioned Memory Retrieval for Autonomous Driving</div><div class='quick-reason'>引入受预测步长调制的层次双路记忆锚点检索与残差适配器抑制长时 4D 语义占据预测误差累积。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>WAM</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32029' target='_blank'>占据世界模型真的遵循给定动作吗？（ReCast）</a> <code>2611.32029</code></div><div class='quick-en'>Do Occupancy World Models Really Follow Actions?</div><div class='quick-reason'>构建反事实轨迹忠实度基准，提出基于相对自车位姿变换对齐可变形注意力的 ReCast 显著提升 OOD 轨迹条件下的 3D 占据预测准确性。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32216' target='_blank'>NativeDrive：面向自动驾驶的原生无编码器多模态规划基础模型</a> <code>2611.32216</code></div><div class='quick-en'>NativeDrive: Native Multimodal Foundations for Autonomous Driving</div><div class='quick-reason'>复用原生多模态统一主干的理解与生成专家分别实现离散/连续策略与训练期驾驶语义编辑稠密监督，推理零额外生成开销。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>Robot-Agent</span> <a class='quick-title' href='https://arxiv.org/abs/2611.33145' target='_blank'>校园迷途：野外三维高斯重建环境下的 VLM 具身空间推理基准</a> <code>2611.33145</code></div><div class='quick-en'>Lost on Campus: Evaluating Embodied Spatial Reasoning of Vision-Language Models in the Wild</div><div class='quick-reason'>基于真实室外大尺度 3DGS 重建环境统一诊断 QA 与闭环交互导航评测，揭示现有 VLM 在空间前瞻与自车-他心定位上的严重短板。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>Robot-Agent</span> <a class='quick-title' href='https://arxiv.org/abs/2611.33143' target='_blank'>ROAM-Bench：基于物理证据校验的具身主动空间智能基准</a> <code>2611.33143</code></div><div class='quick-en'>ROAM-Bench: Evaluating Embodied Active Spatial Intelligence through Evidence Verification</div><div class='quick-reason'>在运动与碰撞约束下提供 27 个室内场景 250 项主动探索推理任务并严格校验几何覆盖证据，揭示前沿 VLM 的过程性虚假成功模式。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.33137' target='_blank'>Physicl Scenes：艺术家构建的 6,499 个物理材质与部件标注 3D 具身场景数据集</a> <code>2611.33137</code></div><div class='quick-en'>Physicl Scenes: An Artist-created 3D Dataset for Learning Perception and Action</div><div class='quick-reason'>提供兼具精细几何、PBR 材质与部件级语义标注的大规模三维室内外场景，并配套评估 VLA 抓取部位合理性的移动操作基准。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>WAM</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31910' target='_blank'>ReJEPA：面向潜空间世界模型的有界预测正则（log cosh 损失）</a> <code>2611.31910</code></div><div class='quick-en'>ReJEPA: Bounded Predictive Regulation for Latent World Models</div><div class='quick-reason'>以逐元素 $\log\cosh$ 替代 $L_2$/$L_1$ 损失兼顾大误差梯度有界性与零点附近二次平滑性，在 LeWorldModel 和 V-JEPA 2.1 上即插即用提升操作与驾驶表现。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>WAM</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32357' target='_blank'>CriticJEPA：世界模型更适合担任评价器而非梯度优化器</a> <code>2611.32357</code></div><div class='quick-en'>CriticJEPA: World Models Are Better Critics Than Optimizers</div><div class='quick-reason'>证实长程梯度优化易利用世界模型误差而失效，改用流模型生成目标条件候选方案并由冻结层次化 JEPA 世界模型滚动择优，以极低算力提升视觉导航与操作。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>Robot-RL</span> <a class='quick-title' href='https://arxiv.org/abs/2611.31902' target='_blank'>MIFLOW：基于动态近期行为先验校准的在线流策略强化学习</a> <code>2611.31902</code></div><div class='quick-en'>MIFLOW: Dynamic Recent-Behavior Priors for Reference-Calibrated Online Flow-Policy Reinforcement Learning</div><div class='quick-reason'>用实时拟合近期执行动作的流匹配先验对数密度同步校准 Actor 与 Critic 目标以抑制离线值函数外推，在 6 项 MuJoCo 控制任务提升后期均值回报。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32218' target='_blank'>PoseVLN：面向视觉-语言导航的连续几何位姿状态演化学习</a> <code>2611.32218</code></div><div class='quick-en'>PoseVLN: Learning Geometric State Evolution for Vision-Language Navigation</div><div class='quick-reason'>在回合相对坐标系下组织记忆并联合预测未来导航动作与局部 $\Delta$Pose 递归推演未来位姿，在 R2R-CE 和 RxR-CE Val-Unseen 分别提升 +2.6 与 +2.9 pp。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>VLA</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32304' target='_blank'>稀疏投毒强劫持：仅 1% 中毒率实现 VLA 轨迹级定向后门攻击</a> <code>2611.32304</code></div><div class='quick-en'>Sparse Poison, Strong Hijack: Efficient Trajectory-Level Backdoors in Vision-Language-Action Models with Only 1\% Poisoning</div><div class='quick-reason'>结合可微渲染优化 3D 物理触发器与双 LoRA 解耦干净/后门梯度更新，在极低 1% 投毒率下即可将 VLA 闭环重定向完成攻击者指定的多步任务。</div></li><li><div class='quick-head'><span class='score-badge'>7分</span> <span class='tag-pill'>WAM</span> <a class='quick-title' href='https://arxiv.org/abs/2611.32776' target='_blank'>通过动作对比识别学习潜空间世界模型（CIA）</a> <code>2611.32776</code></div><div class='quick-en'>Learning World Models through Contrastive Identification of Actions</div><div class='quick-reason'>以历史条件行为提议分布中的对比识别代替传统均方误差逆动力学，在五项视觉控制基准上无需改动规划器即提升规划平均成功率。</div></li></ul>
+        </section>
+        
+    
+        <section class="panel sources-box">
+          <h3 class="section-label">NotebookLM / 批量精读链接 · 10 篇</h3>
+          <textarea id="sources-text" readonly rows="8">https://arxiv.org/html/2611.31535
+https://arxiv.org/html/2611.32206
+https://arxiv.org/html/2611.31822
+https://arxiv.org/html/2611.31705
+https://arxiv.org/html/2611.33141
+https://arxiv.org/html/2611.32053
+https://arxiv.org/html/2611.32654
+https://arxiv.org/html/2611.32639
+https://arxiv.org/html/2611.32245
+https://arxiv.org/html/2611.32016</textarea>
+          <div class="sources-actions">
+            <button id="copy-btn" class="copy-btn" onclick="copySources()">复制全部 HTML 原文链接</button>
+            <span id="copy-status"></span>
+          </div>
+        </section>
+        
+    
+  </div>
+  <script>
+    function copySources() {
+      const el = document.getElementById('sources-text');
+      const status = document.getElementById('copy-status');
+      if (!el) return;
+      const text = el.value;
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+          status.textContent = '✅ 已复制到剪贴板';
+        }).catch(() => fallbackCopy(el, status));
+      } else {
+        fallbackCopy(el, status);
+      }
+    }
+    function fallbackCopy(el, status) {
+      el.select();
+      el.setSelectionRange(0, 99999);
+      try {
+        document.execCommand('copy');
+        status.textContent = '✅ 已复制到剪贴板';
+      } catch (e) {
+        status.textContent = '请手动全选复制上方链接';
+      }
+    }
+  </script>
+</body>
+</html>
